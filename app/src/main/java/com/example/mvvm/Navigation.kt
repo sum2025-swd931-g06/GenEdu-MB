@@ -10,9 +10,12 @@ import com.example.mvvm.ui.screen.detail.DetailScreen
 import com.example.mvvm.ui.screen.home.HomeScreen
 import com.example.mvvm.ui.screen.home.HomeViewModel
 
-sealed class Screen(val route: String) {  //enum
+sealed class Screen(val route: String) {
+    object Login : Screen("login")
     object Home : Screen("home")
     object Detail : Screen("detail")
+    object AddOrEdit : Screen("addOrEdit")
+    object HomeMetro: Screen("homeMetro")
 }
 
 //https://developer.android.com/topic/architecture

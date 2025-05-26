@@ -22,6 +22,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        manifestPlaceholders["appAuthRedirectScheme"] = "com.example.mvvm"
     }
 
     buildTypes {
@@ -66,6 +68,13 @@ dependencies {
 //    kapt(libs.hilt.android.compiler)
     ksp(libs.hilt.android.compiler)
     ksp(libs.androidx.room.compiler)
+
+    // https://mvnrepository.com/artifact/net.openid/appauth
+    implementation(libs.appauth)
+    implementation(libs.androidx.browser)
+
+    implementation(libs.accompanist.pager)
+
 
     implementation(libs.androidx.hilt.navigation.compose)
 
