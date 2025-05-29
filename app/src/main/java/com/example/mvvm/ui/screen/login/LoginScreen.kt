@@ -195,10 +195,6 @@ private fun LoginScreenContent(
             }
             else -> {
                 Button(
-//                    onClick = onLoginClick,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(48.dp)
                     onClick = {
                         usernameError = if (username.isEmpty()) "Username is required" else ""
                         passwordError = if (password.isEmpty()) "Password is required" else ""
