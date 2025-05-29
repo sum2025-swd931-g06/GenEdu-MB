@@ -4,27 +4,45 @@ import android.content.Intent
 import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mvvm.MainViewModel
+import com.example.mvvm.R
 import com.example.mvvm.Screen
 import org.com.hcmurs.common.enum.LoadStatus
 
@@ -78,21 +96,96 @@ private fun LoginScreenContent(
     status: LoadStatus,
     onLoginClick: () -> Unit = {}
 ) {
-    val greetingText = "Welcome to GenEdu System"
+    val greetingText = "Login to GenEdu System"
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    var usernameError by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(16.dp),
+//        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = greetingText,
-            style = MaterialTheme.typography.headlineMedium
+//            style = MaterialTheme.typography.headlineMedium
+            fontSize = MaterialTheme.typography.headlineMedium.fontSize
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = username,
+            onValueChange = {username = it},
+            label = {
+                Text(usernameError.ifEmpty { "Username" },
+                    color = if (usernameError.isNotEmpty()) Color.Red
+                    else Color.Unspecified
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Rounded.AccountCircle,
+                    contentDescription = ""
+                )
+            },
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp, horizontal = 20.dp),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            )
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = password,
+            onValueChange = {password = it},
+            label = {
+                Text(
+                    passwordError.ifEmpty { "Password" },
+                    color = if (passwordError.isNotEmpty()) Color.Red
+                            else Color.Unspecified
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Rounded.Lock,
+                    contentDescription = ""
+                )
+            },
+            visualTransformation = if (passwordVisible) VisualTransformation.None
+                                    else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (passwordVisible)
+                    painterResource(id = R.drawable.visibility_24)
+                    else painterResource(id = R.drawable.visibility_off_24)
+
+                Icon(
+                    painter = image,
+                    contentDescription = "",
+                    modifier = Modifier.clickable { passwordVisible = !passwordVisible }
+                )
+            },
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp, horizontal = 20.dp),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         when (status) {
             is LoadStatus.Loading -> {
@@ -102,14 +195,45 @@ private fun LoginScreenContent(
             }
             else -> {
                 Button(
-                    onClick = onLoginClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
+//                    onClick = onLoginClick,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(48.dp)
+                    onClick = {
+                        usernameError = if (username.isEmpty()) "Username is required" else ""
+                        passwordError = if (password.isEmpty()) "Password is required" else ""
+                        if (usernameError.isEmpty() && passwordError.isEmpty()) {
+                            // Perform login logic here
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 60.dp)
                 ) {
                     Text("Login with Keycloak")
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Forget password?",
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.clickable {
+                // Handle forget password click
+            }
+        )
+
+        Spacer(modifier = Modifier.height(50.dp))
+
+        Row {
+            Text(text = "Don't have an account? ")
+            Text(
+                text = "Sign in",
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable {
+                    // Handle register click
+                }
+            )
         }
     }
 }
