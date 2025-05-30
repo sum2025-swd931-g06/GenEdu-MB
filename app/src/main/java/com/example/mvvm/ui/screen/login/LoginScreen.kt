@@ -44,6 +44,7 @@ import androidx.navigation.NavHostController
 import com.example.mvvm.MainViewModel
 import com.example.mvvm.R
 import com.example.mvvm.Screen
+import com.example.mvvm.ui.theme.CustomTextField
 import org.com.hcmurs.common.enum.LoadStatus
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -119,71 +120,27 @@ private fun LoginScreenContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        TextField(
+        CustomTextField(
             value = username,
-            onValueChange = {username = it},
-            label = {
-                Text(usernameError.ifEmpty { "Username" },
-                    color = if (usernameError.isNotEmpty()) Color.Red
-                    else Color.Unspecified
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Rounded.AccountCircle,
-                    contentDescription = ""
-                )
-            },
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp, horizontal = 20.dp),
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            )
+            onValueChange = { username = it },
+            labelText = "Username",
+            errorText = usernameError,
+            leadingIcon = Icons.Rounded.AccountCircle
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
+        CustomTextField(
             value = password,
-            onValueChange = {password = it},
-            label = {
-                Text(
-                    passwordError.ifEmpty { "Password" },
-                    color = if (passwordError.isNotEmpty()) Color.Red
-                            else Color.Unspecified
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Rounded.Lock,
-                    contentDescription = ""
-                )
-            },
-            visualTransformation = if (passwordVisible) VisualTransformation.None
-                                    else PasswordVisualTransformation(),
-            trailingIcon = {
-                val image = if (passwordVisible)
-                    painterResource(id = R.drawable.visibility_24)
-                    else painterResource(id = R.drawable.visibility_off_24)
-
-                Icon(
-                    painter = image,
-                    contentDescription = "",
-                    modifier = Modifier.clickable { passwordVisible = !passwordVisible }
-                )
-            },
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp, horizontal = 20.dp),
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            )
+            onValueChange = { password = it },
+            labelText = "Password",
+            errorText = passwordError,
+            leadingIcon = Icons.Rounded.Lock,
+            isPassword = true,
+            passwordVisible = passwordVisible,
+            onTogglePasswordVisibility = { passwordVisible = !passwordVisible }
         )
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
