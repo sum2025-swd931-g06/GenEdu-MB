@@ -1,7 +1,11 @@
 package com.example.mvvm
 
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mvvm.ui.screen.detail.DetailScreen
 import com.example.mvvm.ui.screen.home.HomeScreen
 import com.example.mvvm.ui.screen.home.HomeViewModel
+import com.example.mvvm.ui.screen.login.LoginScreen
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
@@ -25,14 +30,30 @@ sealed class Screen(val route: String) {
 //https://github.com/android/architecture-samples
 
 @Composable
-fun Navigation() {
+fun Navigation(
+    authResultLauncher: ActivityResultLauncher<Intent>? = null,
+    setAuthResultCallback: ((Intent?) -> Unit) -> Unit = {}
+) {
     val navController = rememberNavController()
-    //val viewModel = hiltViewModel<MainViewModel>()
+    val mainViewModel: MainViewModel = hiltViewModel()
+    val mainState = mainViewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
-    NavHost(navController = navController, startDestination = Screen.Home.route) {
+    NavHost(navController = navController, startDestination = Screen.Login.route) {
         composable(Screen.Home.route) {
             HomeScreen(navController, hiltViewModel())
         }
+
+        composable(Screen.Login.route) {
+            LoginScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                mainViewModel = mainViewModel,
+                authResultLauncher = authResultLauncher,
+                setAuthResultCallback = setAuthResultCallback
+            )
+        }
+
         composable(Screen.Detail.route) {
             val parentEntry = remember (it) {
                 navController.getBackStackEntry(Screen.Home.route)
