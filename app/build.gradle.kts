@@ -75,6 +75,7 @@ dependencies {
 
     implementation(libs.accompanist.pager)
 
+    implementation(libs.font.awesome)
 
     implementation(libs.androidx.hilt.navigation.compose)
 

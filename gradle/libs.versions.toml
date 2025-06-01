@@ -4,6 +4,7 @@ agp = "8.10.0"
 animation = "1.6.7"
 appauth = "0.11.1"
 browser = "1.8.0"
+fontAwesome = "1.1.1"
 hiltAndroid = "2.49"
 hiltAndroidCompiler = "2.48"
 hiltNavigationCompose = "1.2.0"
@@ -25,6 +26,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 appauth = { module = "net.openid:appauth", version.ref = "appauth" }
+font-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "fontAwesome" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
