@@ -5,6 +5,7 @@ plugins {
     id("com.google.devtools.ksp")
     //id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -65,6 +66,9 @@ dependencies {
 
 
     implementation(libs.hilt.android)
+    implementation(libs.play.services.auth)
+    implementation(libs.firebase.common.ktx)
+    implementation(libs.firebase.auth.ktx)
 //    kapt(libs.hilt.android.compiler)
     ksp(libs.hilt.android.compiler)
     ksp(libs.androidx.room.compiler)
@@ -74,6 +78,7 @@ dependencies {
     implementation(libs.androidx.browser)
 
     implementation(libs.accompanist.pager)
+
 
 
     implementation(libs.androidx.hilt.navigation.compose)
@@ -86,4 +91,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 }

@@ -1,8 +1,13 @@
 package com.example.mvvm.ui.screen.login
 
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,11 +45,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import com.example.mvvm.MainViewModel
 import com.example.mvvm.R
 import com.example.mvvm.Screen
+import com.example.mvvm.presentation.sign_in.GoogleAuthUiClient
 import com.example.mvvm.ui.theme.CustomTextField
+import kotlinx.coroutines.launch
 import org.com.hcmurs.common.enum.LoadStatus
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -53,12 +62,35 @@ fun LoginScreen(
     navController: NavHostController,
     viewModel: LoginViewModel,
     mainViewModel: MainViewModel,
+    googleAuthUiClient: GoogleAuthUiClient,
     authResultLauncher: ActivityResultLauncher<Intent>? = null,
     setAuthResultCallback: ((Intent?) -> Unit) -> Unit = {}
 ) {
     val state = viewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult(),
+        onResult = { result ->
+            if (result.resultCode == RESULT_OK) {
+                lifecycleOwner.lifecycleScope.launch {
+                    val signInResult = googleAuthUiClient.signInWithIntent(
+                        result.data ?: return@launch
+                    )
+                    viewModel.handleGoogleSignInResult(signInResult)
+
+                    if (signInResult.data != null) {
+                        mainViewModel.setAuthenticated(true)
+//                        navController.navigate(Screen.HomeMetro.route) {
+//                            popUpTo(Screen.Login.route) { inclusive = true }
+//                        }
+                        Toast.makeText(context, "Sign in successful - 88", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    )
     // Set the callback for auth results
     LaunchedEffect(Unit) {
         setAuthResultCallback { intent ->
@@ -70,9 +102,10 @@ fun LoginScreen(
     LaunchedEffect(state.value.isAuthenticated) {
         if (state.value.isAuthenticated) {
             mainViewModel.setAuthenticated(true)
-            navController.navigate(Screen.HomeMetro.route) {
-                popUpTo(Screen.Login.route) { inclusive = true }
-            }
+//            navController.navigate(Screen.HomeMetro.route) {
+//                popUpTo(Screen.Login.route) { inclusive = true }
+//            }
+            Toast.makeText(context, "Sign in successful - 108", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -87,7 +120,12 @@ fun LoginScreen(
     LoginScreenContent(
         status = state.value.status,
         onLoginClick = {
-            viewModel.startLogin(context, authResultLauncher)
+            lifecycleOwner.lifecycleScope.launch {
+                val signInIntentSender = googleAuthUiClient.signIn()
+                signInIntentSender?.let {
+                    launcher.launch(IntentSenderRequest.Builder(it).build())
+                }
+            }
         }
     )
 }
@@ -141,7 +179,6 @@ private fun LoginScreenContent(
             onTogglePasswordVisibility = { passwordVisible = !passwordVisible }
         )
 
-
         Spacer(modifier = Modifier.height(16.dp))
 
         when (status) {
@@ -164,6 +201,13 @@ private fun LoginScreenContent(
                     Text("Login with Keycloak")
                 }
             }
+        }
+
+        Button(
+            onClick = onLoginClick,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 60.dp)
+        ) {
+            Text("Login with Google")
         }
 
         Spacer(modifier = Modifier.height(16.dp))

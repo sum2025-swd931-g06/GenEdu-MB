@@ -21,6 +21,7 @@ import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import org.com.hcmurs.common.enum.LoadStatus
 import com.example.mvvm.configs.KeycloakAuthConfig
+import com.example.mvvm.presentation.sign_in.SignInResult
 import javax.inject.Inject
 
 data class LoginUiState(
@@ -95,6 +96,21 @@ class LoginViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 status = LoadStatus.Error("Auth service not initialized")
             )
+        }
+    }
+
+    fun handleGoogleSignInResult(result: SignInResult) {
+        viewModelScope.launch {
+            result.data?.let {
+                _uiState.value = _uiState.value.copy(
+                    isAuthenticated = true,
+                    status = LoadStatus.Success()
+                )
+            } ?: run {
+                _uiState.value = _uiState.value.copy(
+                    status = LoadStatus.Error(result.errorMessage ?: "Google Sign-In failed")
+                )
+            }
         }
     }
 
