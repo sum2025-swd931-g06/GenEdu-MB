@@ -101,8 +101,7 @@ private fun LoginScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -110,21 +109,20 @@ private fun LoginScreenContent(
             painter = painterResource(id = R.drawable.intro_logo),
             contentDescription = null,
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(top = 24.dp),
+                .height(180.dp)
+                .padding(vertical = 16.dp),
             contentScale = ContentScale.Fit
         )
 
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Text(
                 text = greetingText,
-                fontSize = 26.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
@@ -134,10 +132,11 @@ private fun LoginScreenContent(
                         "Don’t have an account yet?\n" +
                         " Register now and enjoy a seamless\n" +
                         "and secure shopping experience",
-                modifier = Modifier.padding(vertical = 16.dp),
+                modifier = Modifier.padding(vertical = 10.dp),
                 color = Color.DarkGray,
                 textAlign = TextAlign.Center,
-                lineHeight = 24.sp
+                lineHeight = 20.sp,
+                fontSize = 14.sp
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -167,46 +166,19 @@ private fun LoginScreenContent(
                 else -> {
 
                     Button(
-                        onClick = { Log.i("LOG", "hehe") },
+                        onClick = onLoginClick,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF6200EE)
+                            containerColor = Color(0xFF6c63ff)
                         ),
                         shape = RoundedCornerShape(10.dp)
                     ) {
                         Text(
                             text = "Let's Get Started",
                             color = Color.White,
-                            fontSize = 18.sp
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 20.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Already have an account?",
-                            textAlign = TextAlign.Center,
                             fontSize = 16.sp
-                        )
-
-                        Spacer(modifier = Modifier.width(6.dp))
-
-                        Text(
-                            modifier = Modifier.clickable{
-                                onLoginClick()
-                            },
-                            text = "Sign in here",
-                            fontSize = 16.sp,
-                            color = Color.Black,
-                            fontWeight = FontWeight.SemiBold,
-
                         )
                     }
                 }
