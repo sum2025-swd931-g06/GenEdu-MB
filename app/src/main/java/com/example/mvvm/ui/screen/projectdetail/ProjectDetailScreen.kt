@@ -10,10 +10,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,9 +29,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mvvm.ui.screen.account.GenEduLogo
-import com.example.mvvm.ui.screen.project.Project
-import com.example.mvvm.ui.screen.project.ProjectStatus
+import com.example.mvvm.models.AudioProject
+import com.example.mvvm.models.AudioProjectStatus
+import com.example.mvvm.models.Project
+import com.example.mvvm.models.ProjectStatus
 import com.example.mvvm.ui.screen.project.ProjectStatusChip
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
@@ -44,12 +50,27 @@ fun ProjectDetailScreen(
         title = "Bài giảng Sinh học lớp 10",
         status = ProjectStatus.COMPLETED,
         creationTime = System.currentTimeMillis() - 86400000 * 2,
-        slideNum = 24
+        slideNum = 24,
+        audioProject = AudioProject(
+            id = "1",
+            title = "Bài văn Tiếng Việt lớp 10",
+            status = AudioProjectStatus.COMPLETED,
+            creationTime = System.currentTimeMillis() - 86400000 * 2,
+            durationSeconds = 187,
+            textContent = "Việt Nam là một quốc gia nằm ở khu vực Đông Nam Á. Việt Nam có nhiều danh lam thắng cảnh và nhiều di sản văn hóa thế giới được UNESCO công nhận.",
+            audioUrl = "https://example.com/audio/123456.mp3",
+            voiceType = "Nữ miền Bắc"
+        )
     ),
+
     onBackClick: () -> Unit = {},
-    onEditClick: (Project) -> Unit = {},
-    onShareClick: (Project) -> Unit = {}
+    onShareClick: (Project) -> Unit = {},
+    onPlayAudio: (String) -> Unit = {}
 ) {
+
+    var isPlaying by remember { mutableStateOf(false) }
+    var currentPosition by remember { mutableStateOf(0) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -96,25 +117,6 @@ fun ProjectDetailScreen(
                         contentDescription = "Share",
                         tint = Color.White
                     )
-                }
-            }
-
-            // GenEdu logo
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    modifier = Modifier.size(56.dp),
-                    shape = CircleShape,
-                    color = Color.White,
-                    shadowElevation = 6.dp
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        GenEduLogo(modifier = Modifier.size(40.dp))
-                    }
                 }
             }
 
@@ -260,6 +262,125 @@ fun ProjectDetailScreen(
 
                         Spacer(modifier = Modifier.height(24.dp))
 
+                        // Audio Player
+                        if (project.audioProject.status == AudioProjectStatus.COMPLETED && project.audioProject.audioUrl != null) {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(containerColor = Color.White)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Audio Player",
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF212121)
+                                    )
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    // Audio control buttons
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceEvenly,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        IconButton(onClick = { /* Rewind logic */ }) {
+                                            Icon(
+                                                imageVector = Icons.Default.ArrowBack,
+                                                contentDescription = "Rewind 10 seconds",
+                                                tint = Color(0xFF2196F3)
+                                            )
+                                        }
+
+                                        FloatingActionButton(
+                                            onClick = {
+                                                isPlaying = !isPlaying
+                                                if (isPlaying) {
+                                                    onPlayAudio(project.audioProject.audioUrl)
+                                                }
+                                            },
+                                            containerColor = Color(0xFF2196F3),
+                                            contentColor = Color.White,
+                                            modifier = Modifier.size(56.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = if (isPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
+                                                contentDescription = if (isPlaying) "Pause" else "Play",
+                                                modifier = Modifier.size(32.dp)
+                                            )
+                                        }
+
+                                        IconButton(onClick = { /* Fast forward logic */ }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = "Forward 10 seconds",
+                                                tint = Color(0xFF2196F3)
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    // Progress bar
+                                    Slider(
+                                        value = currentPosition.toFloat(),
+                                        onValueChange = { currentPosition = it.toInt() },
+                                        valueRange = 0f..project.audioProject.durationSeconds.toFloat(),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+
+                                    // Time indicators
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = formatDuration(currentPosition),
+                                            fontSize = 12.sp,
+                                            color = Color(0xFF757575)
+                                        )
+
+                                        Text(
+                                            text = formatDuration(project.audioProject.durationSeconds),
+                                            fontSize = 12.sp,
+                                            color = Color(0xFF757575)
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
+
+                        // Text Content
+                        Text(
+                            text = "Nội dung văn bản",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF212121)
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = project.audioProject.textContent,
+                                    fontSize = 15.sp,
+                                    color = Color(0xFF424242),
+                                    lineHeight = 24.sp
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
                         // Project statistics or additional info
                         Card(
                             modifier = Modifier.fillMaxWidth(),
@@ -277,31 +398,33 @@ fun ProjectDetailScreen(
 
                                 StatItem("Tổng số slides", project.slideNum.toString())
                                 StatItem("Trạng thái", project.status.name.replace("_", " "))
+                                StatItem("Thời lượng", formatDuration(project.audioProject.durationSeconds))
+                                StatItem("Loại giọng đọc", project.audioProject.voiceType)
                                 StatItem("Ngày chỉnh sửa cuối", formatDate(project.creationTime))
                                 StatItem("ID dự án", project.id)
                             }
                         }
-                    }
-
-                    // Edit FAB
-                    FloatingActionButton(
-                        onClick = { onEditClick(project) },
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .align(Alignment.BottomEnd),
-                        containerColor = Color(0xFF2196F3),
-                        contentColor = Color.White
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Project"
-                        )
                     }
                 }
             }
         }
     }
 }
+
+@Composable
+private fun formatDuration(seconds: Int): String {
+    val minutes = seconds / 60
+    val remainingSeconds = seconds % 60
+    return "%d:%02d".format(minutes, remainingSeconds)
+}
+
+//@RequiresApi(Build.VERSION_CODES.O)
+//private fun formatDate(timestamp: Long): String {
+//    val instant = Instant.ofEpochMilli(timestamp)
+//    val localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
+//    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+//    return localDateTime.format(formatter)
+//}
 
 @Composable
 fun SlidePreviewItem(slideNumber: Int, title: String) {

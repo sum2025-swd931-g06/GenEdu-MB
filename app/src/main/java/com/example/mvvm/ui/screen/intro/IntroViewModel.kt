@@ -1,4 +1,4 @@
-package com.example.mvvm.ui.screen.login
+package com.example.mvvm.ui.screen.intro
 
 import android.content.Context
 import android.content.Intent
@@ -31,7 +31,7 @@ data class LoginUiState(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
-class LoginViewModel @Inject constructor(
+class IntroViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 

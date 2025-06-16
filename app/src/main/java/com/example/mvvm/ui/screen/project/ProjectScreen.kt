@@ -4,7 +4,18 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -12,9 +23,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,28 +42,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mvvm.ui.screen.account.GenEduLogo
+import com.example.mvvm.models.AudioProject
+import com.example.mvvm.models.AudioProjectStatus
+import com.example.mvvm.models.Project
+import com.example.mvvm.models.ProjectStatus
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
-import compose.icons.fontawesomeicons.regular.Bookmark
 import compose.icons.fontawesomeicons.regular.Calendar
 import compose.icons.fontawesomeicons.regular.FileArchive
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.*
-
-data class Project(
-    val id: String,
-    val title: String,
-    val status: ProjectStatus,
-    val creationTime: Long,
-    val slideNum: Int = 0
-)
-
-enum class ProjectStatus {
-    DRAFT, IN_PROGRESS, COMPLETED
-}
 
 @Composable
 fun ProjectStatusChip(status: ProjectStatus) {
@@ -174,21 +179,52 @@ fun ProjectScreen(
             title = "Bài giảng Sinh học lớp 10",
             status = ProjectStatus.COMPLETED,
             creationTime = System.currentTimeMillis() - 86400000 * 2,
-            slideNum = 24
+            slideNum = 24,
+            audioProject = AudioProject(
+                id = "1",
+                title = "Bài văn Tiếng Việt lớp 10",
+                status = AudioProjectStatus.COMPLETED,
+                creationTime = System.currentTimeMillis() - 86400000 * 2,
+                durationSeconds = 187,
+                textContent = "Việt Nam là một quốc gia nằm ở khu vực Đông Nam Á. Việt Nam có nhiều danh lam thắng cảnh và nhiều di sản văn hóa thế giới được UNESCO công nhận.",
+                audioUrl = "https://example.com/audio/123456.mp3",
+                voiceType = "Nữ miền Bắc"
+            )
+
         ),
         Project(
             id = "2",
             title = "Hóa học cơ bản - Chương 3",
             status = ProjectStatus.IN_PROGRESS,
             creationTime = System.currentTimeMillis() - 86400000,
-            slideNum = 15
+            slideNum = 15,
+            audioProject = AudioProject(
+                id = "1",
+                title = "Bài văn Tiếng Việt lớp 10",
+                status = AudioProjectStatus.COMPLETED,
+                creationTime = System.currentTimeMillis() - 86400000 * 2,
+                durationSeconds = 187,
+                textContent = "Việt Nam là một quốc gia nằm ở khu vực Đông Nam Á. Việt Nam có nhiều danh lam thắng cảnh và nhiều di sản văn hóa thế giới được UNESCO công nhận.",
+                audioUrl = "https://example.com/audio/123456.mp3",
+                voiceType = "Nữ miền Bắc"
+            )
         ),
         Project(
             id = "3",
             title = "Lịch sử Việt Nam thời kỳ đổi mới",
             status = ProjectStatus.DRAFT,
             creationTime = System.currentTimeMillis(),
-            slideNum = 8
+            slideNum = 8,
+            audioProject = AudioProject(
+                id = "1",
+                title = "Bài văn Tiếng Việt lớp 10",
+                status = AudioProjectStatus.COMPLETED,
+                creationTime = System.currentTimeMillis() - 86400000 * 2,
+                durationSeconds = 187,
+                textContent = "Việt Nam là một quốc gia nằm ở khu vực Đông Nam Á. Việt Nam có nhiều danh lam thắng cảnh và nhiều di sản văn hóa thế giới được UNESCO công nhận.",
+                audioUrl = "https://example.com/audio/123456.mp3",
+                voiceType = "Nữ miền Bắc"
+            )
         )
     )
 
@@ -233,26 +269,6 @@ fun ProjectScreen(
                 )
 
                 Spacer(modifier = Modifier.width(48.dp))
-            }
-
-            // GenEdu logo
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp)
-                    .offset(y = 16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    modifier = Modifier.size(56.dp),
-                    shape = CircleShape,
-                    color = Color.White,
-                    shadowElevation = 6.dp
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        GenEduLogo(modifier = Modifier.size(40.dp))
-                    }
-                }
             }
 
             // Content Card
