@@ -33,9 +33,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mvvm.MainViewModel
-import com.example.mvvm.Screen
-import org.com.hcmurs.common.enum.LoadStatus
 import com.example.mvvm.R
+import com.example.mvvm.Screen
+import com.example.mvvm.enum.LoadStatus
+import com.example.mvvm.ui.theme.LoadingSpinnerColor
+import com.example.mvvm.ui.theme.MainColor
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -60,7 +62,7 @@ fun IntroScreen(
     LaunchedEffect(state.value.isAuthenticated) {
         if (state.value.isAuthenticated) {
             mainViewModel.setAuthenticated(true)
-            navController.navigate(Screen.HomeMetro.route) {
+            navController.navigate(Screen.Home.route) {
                 popUpTo(Screen.Intro.route) { inclusive = true }
             }
         }
@@ -139,7 +141,7 @@ private fun IntroScreenContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     CircularProgressIndicator(
-                        color = Color(0xFF6200EE),
+                        color = MainColor,
                         strokeWidth = 3.dp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -160,7 +162,7 @@ private fun IntroScreenContent(
                         .fillMaxWidth()
                         .height(52.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6C63FF)
+                        containerColor = LoadingSpinnerColor
                     ),
                     shape = RoundedCornerShape(14.dp)
                 ) {

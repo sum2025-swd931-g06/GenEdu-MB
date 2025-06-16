@@ -19,7 +19,7 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
-import org.com.hcmurs.common.enum.LoadStatus
+import com.example.mvvm.enum.LoadStatus
 import com.example.mvvm.configs.KeycloakAuthConfig
 import javax.inject.Inject
 

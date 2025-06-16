@@ -1,6 +1,5 @@
 package com.example.mvvm.ui.screen.account
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,13 +40,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mvvm.ui.theme.DangerColor
+import com.example.mvvm.ui.theme.DarkPurple
+import com.example.mvvm.ui.theme.LightPurple
+import com.example.mvvm.ui.theme.MainColor
 import androidx.compose.material3.Divider as HorizontalDivider
-import com.example.mvvm.R
 
 data class MenuItem(
     val icon: ImageVector,
@@ -86,9 +86,9 @@ fun MenuItemRow(
                     imageVector = item.icon,
                     contentDescription = null,
                     tint = if (item.isDestructive)
-                        Color(0xFFE53935)
+                        DangerColor
                     else
-                        Color(0xFF2196F3),
+                        MainColor,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -100,7 +100,7 @@ fun MenuItemRow(
         Text(
             text = item.title,
             color = if (item.isDestructive)
-                Color(0xFFE53935)
+                DangerColor
             else
                 Color(0xFF424242),
             fontSize = 16.sp,
@@ -129,7 +129,7 @@ fun LogoutButton(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFE53935), // Red color for warning/destructive action
+            containerColor = DangerColor, // Red color for warning/destructive action
             contentColor = Color.White
         ),
         shape = RoundedCornerShape(8.dp)
@@ -165,7 +165,7 @@ fun AccountScreen(
     val menuItem = listOf(
         MenuItem(
             icon = Icons.Default.Person,
-            title = "Họ tên: Anh Tú",
+            title = "Họ tên: Nguyen Van Anh Tú",
             hasArrow = false
         ),
         MenuItem(
@@ -197,9 +197,9 @@ fun AccountScreen(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF00BCD4), // Cyan
-                        Color(0xFF2196F3), // Blue
-                        Color(0xFF1976D2)  // Dark Blue
+                        LightPurple,
+                        MainColor,
+                        DarkPurple
                     )
                 )
             )

@@ -37,12 +37,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.mvvm.R
 import com.example.mvvm.mock.sampleProjects
 import com.example.mvvm.models.Project
-import com.example.mvvm.R
-import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -50,7 +50,7 @@ import java.util.Locale
 @Composable
 fun HomeScreen(
     navHostController: NavHostController,
-    hiltViewModel: HiltViewModel,
+    viewModel: HomeViewModel,
     username: String = "Fukada 🐢",
     projects: List<Project> = sampleProjects
 ) {
@@ -124,9 +124,9 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            FeatureItem(R.drawable.logo, "Project")
-            FeatureItem(R.drawable.logo, "Audio")
-            FeatureItem(R.drawable.btn_5, "Profile")
+            FeatureItem(R.drawable.ic_launcher_background, "Project")
+            FeatureItem(R.drawable.ic_launcher_background, "Audio")
+            FeatureItem(R.drawable.ic_launcher_background, "Profile")
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -215,9 +215,9 @@ fun HomeScreenPreview() {
     MaterialTheme {
         HomeScreen(
             navController,
-            hiltViewModel = TODO(),
-            username = TODO(),
-            projects = TODO()
+            viewModel = HomeViewModel(null, null), // Create a simple mock ViewModel
+            username = "Preview User",
+            projects = sampleProjects
         )
     }
     

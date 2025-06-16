@@ -33,7 +33,10 @@ import com.example.mvvm.models.AudioProject
 import com.example.mvvm.models.AudioProjectStatus
 import com.example.mvvm.models.Project
 import com.example.mvvm.models.ProjectStatus
-import com.example.mvvm.ui.screen.project.ProjectStatusChip
+import com.example.mvvm.ui.components.chips.ProjectStatusChip
+import com.example.mvvm.ui.theme.DarkPurple
+import com.example.mvvm.ui.theme.LightPurple
+import com.example.mvvm.ui.theme.MainColor
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.regular.Calendar
@@ -77,9 +80,9 @@ fun ProjectDetailScreen(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF00BCD4), // Cyan
-                        Color(0xFF2196F3), // Blue
-                        Color(0xFF1976D2)  // Dark Blue
+                        LightPurple,
+                        MainColor,
+                        DarkPurple
                     )
                 )
             )

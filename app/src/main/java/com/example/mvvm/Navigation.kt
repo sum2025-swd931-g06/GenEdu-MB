@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mvvm.ui.navigation.BottomNavHost
 import com.example.mvvm.ui.screen.home.HomeScreen
+import com.example.mvvm.ui.screen.home.HomeViewModel
 import com.example.mvvm.ui.screen.intro.IntroScreen
 
 sealed class Screen(val route: String) {
@@ -18,7 +19,6 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Detail : Screen("detail")
     object AddOrEdit : Screen("addOrEdit")
-    object HomeMetro: Screen("homeMetro")
 }
 
 //https://developer.android.com/topic/architecture
@@ -42,12 +42,15 @@ fun Navigation(
         BottomNavHost(navController = navController) { padding ->
             NavHost(
                 navController = navController,
-                startDestination = Screen.HomeMetro.route,
+                startDestination = Screen.Intro.route,
 //                modifier = Modifier.padding(padding = padding)
             ) {
-                // Define all your screens here
-                composable(Screen.HomeMetro.route) {
-                    HomeScreen(navController, hiltViewModel())
+                composable(Screen.Home.route) {
+                    val homeViewModel: HomeViewModel = hiltViewModel()
+                    HomeScreen(
+                        navController,
+                        homeViewModel
+                    )
                 }
                 // Add other screens
             }
@@ -64,6 +67,8 @@ fun Navigation(
                     setAuthResultCallback = setAuthResultCallback
                 )
             }
+
+
         }
     }
 }
