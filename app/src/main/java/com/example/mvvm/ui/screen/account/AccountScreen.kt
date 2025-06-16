@@ -58,15 +58,6 @@ data class MenuItem(
 )
 
 @Composable
-fun GenEduLogo(modifier: Modifier = Modifier) {
-    Image(
-        painter = painterResource(id = R.drawable.ic_launcher_foreground),
-        contentDescription = "GenEdu Logo",
-        modifier = modifier
-    )
-}
-
-@Composable
 fun MenuItemRow(
     item: MenuItem,
     onClick: () -> Unit
@@ -285,26 +276,6 @@ fun AccountScreen(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // GenEdu logo đúng chuẩn
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset(y = (28).dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Surface(
-                        modifier = Modifier.size(56.dp),
-                        shape = CircleShape,
-                        color = Color.White,
-                        shadowElevation = 6.dp
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            GenEduLogo(modifier = Modifier.size(40.dp))
-                        }
-                    }
-                }
             }
             // Content Card
             Surface(
