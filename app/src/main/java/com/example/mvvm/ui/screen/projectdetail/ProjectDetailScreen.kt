@@ -263,7 +263,7 @@ fun ProjectDetailScreen(
                         Spacer(modifier = Modifier.height(24.dp))
 
                         // Audio Player
-                        if (project.audioProject.status == AudioProjectStatus.COMPLETED && project.audioProject.audioUrl != null) {
+                        if (project.audioProject != null && project.audioProject.status == AudioProjectStatus.COMPLETED && project.audioProject.audioUrl != null) {
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -370,12 +370,14 @@ fun ProjectDetailScreen(
                             colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                Text(
-                                    text = project.audioProject.textContent,
-                                    fontSize = 15.sp,
-                                    color = Color(0xFF424242),
-                                    lineHeight = 24.sp
-                                )
+                                project.audioProject?.let {
+                                    Text(
+                                        text = it.textContent,
+                                        fontSize = 15.sp,
+                                        color = Color(0xFF424242),
+                                        lineHeight = 24.sp
+                                    )
+                                }
                             }
                         }
 
@@ -398,8 +400,16 @@ fun ProjectDetailScreen(
 
                                 StatItem("Tổng số slides", project.slideNum.toString())
                                 StatItem("Trạng thái", project.status.name.replace("_", " "))
-                                StatItem("Thời lượng", formatDuration(project.audioProject.durationSeconds))
-                                StatItem("Loại giọng đọc", project.audioProject.voiceType)
+                                project.audioProject?.let { formatDuration(it.durationSeconds) }?.let {
+                                    StatItem("Thời lượng",
+                                        it
+                                    )
+                                }
+                                project.audioProject?.voiceType?.let {
+                                    StatItem("Loại giọng đọc",
+                                        it
+                                    )
+                                }
                                 StatItem("Ngày chỉnh sửa cuối", formatDate(project.creationTime))
                                 StatItem("ID dự án", project.id)
                             }

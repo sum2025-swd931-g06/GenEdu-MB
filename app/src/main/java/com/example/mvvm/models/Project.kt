@@ -6,7 +6,7 @@ data class Project(
     val status: ProjectStatus,
     val creationTime: Long,
     val slideNum: Int = 0,
-    val audioProject: AudioProject
+    val audioProject: AudioProject? = null
 ){
 
 }
