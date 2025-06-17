@@ -45,25 +45,6 @@ fun Navigation(
     val mainState = mainViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // For screens that should include the bottom nav
-    if (mainState.value.isAuthenticated) {
-        BottomNavHost(navController = navController) { padding ->
-            NavHost(
-                navController = navController,
-                startDestination = Screen.Intro.route,
-//                modifier = Modifier.padding(padding = padding)
-            ) {
-                composable(Screen.Home.route) {
-                    val homeViewModel: HomeViewModel = hiltViewModel()
-                    HomeScreen(
-                        navController,
-                        homeViewModel
-                    )
-                }
-                // Add other screens
-            }
-        }
-    } else {
         // For login/auth screens without bottom nav
         NavHost(navController = navController, startDestination = Screen.Home.route) {
             composable(Screen.Intro.route) {
@@ -79,7 +60,8 @@ fun Navigation(
             composable(Screen.Home.route){
                 HomeScreen(
                     navController = navController,
-                    viewModel = hiltViewModel<HomeViewModel>()
+                    viewModel = hiltViewModel<HomeViewModel>(),
+                    mainViewModel = mainViewModel
                 )
             }
 
@@ -107,10 +89,10 @@ fun Navigation(
 
             composable(Screen.UserProfile.route){
                 AccountScreen(
-                    navController = navController
+                    navController = navController,
+                    mainViewModel = mainViewModel,
                 )
             }
 
         }
-    }
 }

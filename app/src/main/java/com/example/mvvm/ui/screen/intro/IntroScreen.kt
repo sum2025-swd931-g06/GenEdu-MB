@@ -5,12 +5,14 @@ import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -60,9 +62,12 @@ fun IntroScreen(
     }
 
     // Handle authentication success
-    LaunchedEffect(state.value.isAuthenticated) {
+    LaunchedEffect(state.value.isAuthenticated, state.value.userData) {
         if (state.value.isAuthenticated) {
             mainViewModel.setAuthenticated(true)
+            state.value.userData?.let { userData ->
+                mainViewModel.setUserData(userData)
+            }
             navController.navigate(Screen.Home.route) {
                 popUpTo(Screen.Intro.route) { inclusive = true }
             }
@@ -97,17 +102,14 @@ private fun IntroScreenContent(
             .fillMaxSize()
             .statusBarsPadding()
             .padding(horizontal = 20.dp, vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
-
-        Spacer(modifier = Modifier.height(12.dp))
-
         Image(
             painter = painterResource(id = R.drawable.intro_logo),
             contentDescription = null,
             modifier = Modifier
-                .height(140.dp)
-                .padding(top = 8.dp, bottom = 16.dp),
+                .size(300.dp),
             contentScale = ContentScale.Fit
         )
 

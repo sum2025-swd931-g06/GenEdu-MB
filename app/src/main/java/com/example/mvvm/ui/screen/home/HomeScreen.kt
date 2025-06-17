@@ -28,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,8 +37,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.mvvm.MainViewModel
 import com.example.mvvm.R
 import com.example.mvvm.Screen
 import com.example.mvvm.mock.sampleProjects
@@ -50,9 +53,13 @@ import com.example.mvvm.utils.navigateTo
 fun HomeScreen(
     navController: NavHostController,
     viewModel: HomeViewModel,
-    username: String = "Fukada 🐢",
+    mainViewModel: MainViewModel,
     projects: List<Project> = sampleProjects
 ) {
+
+    val userData = mainViewModel.userData.collectAsState().value
+    val username = userData?.name ?: "Guest"
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -176,13 +183,13 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     val navController = rememberNavController()
+    val mainViewModel = MainViewModel()
 
     MaterialTheme {
         HomeScreen(
             navController,
             viewModel = HomeViewModel(null, null), // Create a simple mock ViewModel
-            username = "Preview User",
-            projects = sampleProjects
+            mainViewModel = mainViewModel
         )
     }
 
