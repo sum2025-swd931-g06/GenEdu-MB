@@ -41,6 +41,7 @@ import com.example.mvvm.ui.components.chips.ProjectStatusChip
 import com.example.mvvm.ui.theme.DarkPurple
 import com.example.mvvm.ui.theme.LightPurple
 import com.example.mvvm.ui.theme.MainColor
+import com.example.mvvm.utils.findProjectById
 import com.example.mvvm.utils.navigateToHome
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
@@ -53,23 +54,7 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProjectDetailScreen(
-    project: Project = Project(
-        id = "1",
-        title = "Bài giảng Sinh học lớp 10",
-        status = ProjectStatus.COMPLETED,
-        creationTime = System.currentTimeMillis() - 86400000 * 2,
-        slideNum = 24,
-        audioProject = AudioProject(
-            id = "1",
-            title = "Bài văn Tiếng Việt lớp 10",
-            status = AudioProjectStatus.COMPLETED,
-            creationTime = System.currentTimeMillis() - 86400000 * 2,
-            durationSeconds = 187,
-            textContent = "Việt Nam là một quốc gia nằm ở khu vực Đông Nam Á. Việt Nam có nhiều danh lam thắng cảnh và nhiều di sản văn hóa thế giới được UNESCO công nhận.",
-            audioUrl = "https://example.com/audio/123456.mp3",
-            voiceType = "Nữ miền Bắc"
-        )
-    ),
+    projectId: String = "",
     navController: NavHostController,
     onBackClick: () -> Unit = {},
     onShareClick: (Project) -> Unit = {},
@@ -78,6 +63,29 @@ fun ProjectDetailScreen(
 
     var isPlaying by remember { mutableStateOf(false) }
     var currentPosition by remember { mutableStateOf(0) }
+
+    val project = if (projectId.isNotEmpty()) {
+        findProjectById(projectId)
+    } else {
+        Project(
+            id = "1",
+            title = "Bài giảng Sinh học lớp 10",
+            status = ProjectStatus.COMPLETED,
+            creationTime = System.currentTimeMillis() - 86400000 * 2,
+            slideNum = 24,
+            audioProject = AudioProject(
+                id = "1",
+                title = "Bài văn Tiếng Việt lớp 10",
+                status = AudioProjectStatus.COMPLETED,
+                creationTime = System.currentTimeMillis() - 86400000 * 2,
+                durationSeconds = 187,
+                textContent = "Việt Nam là một quốc gia nằm ở khu vực Đông Nam Á. Việt Nam có nhiều danh lam thắng cảnh và nhiều di sản văn hóa thế giới được UNESCO công nhận.",
+                audioUrl = "https://example.com/audio/123456.mp3",
+                voiceType = "Nữ miền Bắc"
+            )
+        )
+    }
+
     Surface(
         modifier = Modifier
             .fillMaxSize()

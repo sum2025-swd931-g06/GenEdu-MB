@@ -6,8 +6,8 @@ fun navigateToHome(navController: androidx.navigation.NavController) {
     navController.navigate(Screen.Home.route)
 }
 
-fun navigateTo(navController: androidx.navigation.NavController, destination: Screen) {
-    navController.navigate(destination.route)
+fun navigateTo(navController: androidx.navigation.NavController, destination: String) {
+    navController.navigate(destination)
 //    {
 //        popUpTo(navController.graph.findStartDestination().id) {
 //            saveState = true

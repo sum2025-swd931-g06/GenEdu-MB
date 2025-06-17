@@ -136,17 +136,17 @@ fun HomeScreen(
             FeatureItem(
                 iconRes = R.drawable.presentation_100,
                 label = "Project",
-                navigateTo = { navigateTo(navController, Screen.Project) }
+                navigateTo = { navigateTo(navController, Screen.Project.route) }
             )
             FeatureItem(
                 iconRes = R.drawable.audio_100,
                 label = "Audio",
-                navigateTo = { navigateTo(navController, Screen.Project) }
+                navigateTo = { navigateTo(navController, Screen.Project.route) }
             )
             FeatureItem(
                 iconRes = R.drawable.profile_100,
                 label = "Profile",
-                navigateTo = { navigateTo(navController, Screen.UserProfile) }
+                navigateTo = { navigateTo(navController, Screen.UserProfile.route) }
             )
         }
 
@@ -159,7 +159,7 @@ fun HomeScreen(
         ) {
             Text("Recents Project", fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Text("View all", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.clickable {
-                navigateTo(navController, Screen.Project)
+                navigateTo(navController, Screen.Project.route)
             })
         }
 
@@ -247,7 +247,7 @@ fun ProjectCard(navController: NavHostController, project: Project) {
     ) {
         Row(
             modifier = Modifier.padding(12.dp).clickable {
-                navigateTo(navController, Screen.ProjectDetail)
+                navigateTo(navController, Screen.ProjectDetail.route)
             },
             verticalAlignment = Alignment.CenterVertically,
         ) {

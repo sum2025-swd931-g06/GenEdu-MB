@@ -328,7 +328,7 @@ fun AccountScreen(
                                 hasArrow = false,
                                 isDestructive = false
                             ),
-                            onClick = { navigateTo(navController, Screen.Intro) }
+                            onClick = { navigateTo(navController, Screen.Intro.route) }
                         )
 
                         Spacer(modifier = Modifier.height(50.dp))

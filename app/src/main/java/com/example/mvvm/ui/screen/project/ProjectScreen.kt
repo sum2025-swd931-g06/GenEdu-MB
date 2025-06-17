@@ -1,6 +1,7 @@
 package com.example.mvvm.ui.screen.project
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.mvvm.Screen
 import com.example.mvvm.models.AudioProject
 import com.example.mvvm.models.AudioProjectStatus
 import com.example.mvvm.models.Project
@@ -59,6 +61,7 @@ import com.example.mvvm.ui.theme.DarkPurple
 import com.example.mvvm.ui.theme.LightPurple
 import com.example.mvvm.ui.theme.MainColor
 import com.example.mvvm.utils.formatDuration
+import com.example.mvvm.utils.navigateTo
 import com.example.mvvm.utils.navigateToHome
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
@@ -269,7 +272,9 @@ fun ProjectItem(
 fun ProjectScreen(
     navController: NavController,
     onBackClick: () -> Unit = {},
-    onProjectClick: (Project) -> Unit = {},
+    onProjectClick: (Project) -> Unit = { projects ->
+        navigateTo(navController, Screen.ProjectDetail.createRoute(projects.id))
+    },
     onAudioProjectClick: (AudioProject) -> Unit = {},
     onCreateNewProject: () -> Unit = {}
 ) {
@@ -429,7 +434,7 @@ fun ProjectScreen(
                                         items(projects) { project ->
                                             ProjectItem(
                                                 project = project,
-                                                onClick = onProjectClick
+                                                onClick = { onProjectClick(it) }
                                             )
                                         }
                                     }
