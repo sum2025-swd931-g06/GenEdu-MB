@@ -341,10 +341,7 @@ fun ProjectScreen(
 
     val audioProjects = projects.mapNotNull { it.audioProject }
 
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    Surface(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()

@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -40,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -197,11 +200,7 @@ fun AccountScreen(
         )
     )
 
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-
+    Surface(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -221,7 +220,7 @@ fun AccountScreen(
             // and handle onClick events for each item
             Column(modifier = Modifier.fillMaxSize()) {
                 // status bar spacer
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(WindowInsets.statusBars.getTop(LocalDensity.current).dp))
                 //header
                 Row(
                     modifier = Modifier

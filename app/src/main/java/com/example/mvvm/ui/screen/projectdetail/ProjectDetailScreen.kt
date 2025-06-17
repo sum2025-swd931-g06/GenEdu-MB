@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -86,10 +87,7 @@ fun ProjectDetailScreen(
         )
     }
 
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    Surface(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -105,7 +103,7 @@ fun ProjectDetailScreen(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 // Status bar spacer
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(WindowInsets.statusBars.getTop(LocalDensity.current).dp))
 
                 // Header
                 Row(
