@@ -43,12 +43,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -345,13 +341,13 @@ fun ProjectScreen(
 
     val audioProjects = projects.mapNotNull { it.audioProject }
 
-
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .verticalScroll(rememberScrollState())
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
@@ -462,7 +458,7 @@ fun ProjectScreen(
                 }
             }
         }
-
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

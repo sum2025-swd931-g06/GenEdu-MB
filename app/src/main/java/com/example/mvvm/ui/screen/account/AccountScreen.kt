@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -202,145 +200,146 @@ fun AccountScreen(
         )
     )
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .verticalScroll(rememberScrollState())
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        LightPurple,
-                        MainColor,
-                        DarkPurple
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            LightPurple,
+                            MainColor,
+                            DarkPurple
+                        )
                     )
                 )
-            )
-    )
-    {
-        // Here you can use the menuItem list to create your account screen UI
-        // For example, you can use LazyColumn to display the menu items
-        // and handle onClick events for each item
-        Column(modifier = Modifier.fillMaxSize()) {
-            // status bar spacer
-            Spacer(modifier = Modifier.height(WindowInsets.statusBars.getTop(LocalDensity.current).dp))
-            //header
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBackClick)
-                {
-                    Icon(
-                        modifier = Modifier.clickable {
-                            navigateToHome(navController)
-                        },
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
-                Text(
-                    text = "Thông tin tài khoản",
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                Spacer(modifier = Modifier.width(48.dp))
-
-            }
-
-            // Profile Section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            )
-            {
-                // Avatar
-                Box(
+        )
+        {
+            // Here you can use the menuItem list to create your account screen UI
+            // For example, you can use LazyColumn to display the menu items
+            // and handle onClick events for each item
+            Column(modifier = Modifier.fillMaxSize()) {
+                // status bar spacer
+                Spacer(modifier = Modifier.height(WindowInsets.statusBars.getTop(LocalDensity.current).dp))
+                //header
+                Row(
                     modifier = Modifier
-                        .size(80.dp)
-                        .background(Color.White, CircleShape)
-                        .padding(4.dp),
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(64.dp)
-                            .background(Color(0xFFE0E0E0), CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    IconButton(onClick = onBackClick)
+                    {
                         Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Avatar",
-                            modifier = Modifier.size(48.dp),
-                            tint = Color(0xFF9E9E9E)
+                            modifier = Modifier.clickable {
+                                navigateToHome(navController)
+                            },
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
                         )
                     }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Thông tin tài khoản",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(modifier = Modifier.width(48.dp))
 
-                //Name
-                Text(
-                    text = "Anh Tú",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            // Content Card
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-                color = Color.White,
-                shadowElevation = 8.dp
-            ) {
+                }
+
+                // Profile Section
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    // Menu Items
-                    menuItem.forEach { item ->
-                        MenuItemRow(
-                            item = item,
-                            onClick = { onMenuItemClick(item) }
-                        )
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                )
+                {
+                    // Avatar
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .background(Color.White, CircleShape)
+                            .padding(4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(Color(0xFFE0E0E0), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Avatar",
+                                modifier = Modifier.size(48.dp),
+                                tint = Color(0xFF9E9E9E)
+                            )
+                        }
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // Divider
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        color = Color(0xFFE0E0E0)
+                    //Name
+                    Text(
+                        text = "Anh Tú",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
                     )
+                }
+                // Content Card
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+                    color = Color.White,
+                    shadowElevation = 8.dp
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        // Menu Items
+                        menuItem.forEach { item ->
+                            MenuItemRow(
+                                item = item,
+                                onClick = { onMenuItemClick(item) }
+                            )
+                        }
 
-                    // Logout Button
-                    MenuItemRow(
-                        item = MenuItem(
-                            icon = Icons.Default.ExitToApp,
-                            title = "Đăng xuất",
-                            hasArrow = false,
-                            isDestructive = false
-                        ),
-                        onClick = { navigateTo(navController, Screen.Intro.route) }
-                    )
+                        // Divider
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            color = Color(0xFFE0E0E0)
+                        )
 
-                    Spacer(modifier = Modifier.height(50.dp))
+                        // Logout Button
+                        MenuItemRow(
+                            item = MenuItem(
+                                icon = Icons.Default.ExitToApp,
+                                title = "Đăng xuất",
+                                hasArrow = false,
+                                isDestructive = false
+                            ),
+                            onClick = { navigateTo(navController, Screen.Intro.route) }
+                        )
+
+                        Spacer(modifier = Modifier.height(50.dp))
+
+                    }
 
                 }
 
-            }
 
+            }
         }
+
     }
 }
 
