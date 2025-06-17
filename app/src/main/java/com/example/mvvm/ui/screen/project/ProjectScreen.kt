@@ -45,6 +45,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.mvvm.models.AudioProject
 import com.example.mvvm.models.AudioProjectStatus
 import com.example.mvvm.models.Project
@@ -57,6 +59,7 @@ import com.example.mvvm.ui.theme.DarkPurple
 import com.example.mvvm.ui.theme.LightPurple
 import com.example.mvvm.ui.theme.MainColor
 import com.example.mvvm.utils.formatDuration
+import com.example.mvvm.utils.navigateToHome
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.regular.Calendar
@@ -264,6 +267,7 @@ fun ProjectItem(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProjectScreen(
+    navController: NavController,
     onBackClick: () -> Unit = {},
     onProjectClick: (Project) -> Unit = {},
     onAudioProjectClick: (AudioProject) -> Unit = {},
@@ -328,106 +332,115 @@ fun ProjectScreen(
 
     val audioProjects = projects.mapNotNull { it.audioProject }
 
-    Box(
+    Surface(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        LightPurple,
-                        MainColor,
-                        DarkPurple
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            LightPurple,
+                            MainColor,
+                            DarkPurple
+                        )
                     )
                 )
-            )
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            // Status bar spacer
-            Spacer(modifier = Modifier.height(5.dp))
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                // Status bar spacer
+                Spacer(modifier = Modifier.height(5.dp))
 
-            // Header
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
+                // Header
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            modifier = Modifier.clickable {
+                                navigateToHome(navController)
+                            },
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+
+                    Text(
+                        text = "Dự án của tôi",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    Spacer(modifier = Modifier.width(48.dp))
+                }
+
+                // View Toggle
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    ViewToggle(
+                        selectedMode = selectedMode,
+                        onModeChange = { selectedMode = it }
                     )
                 }
 
-                Text(
-                    text = "Dự án của tôi",
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Spacer(modifier = Modifier.width(48.dp))
-            }
-
-            // View Toggle
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                ViewToggle(
-                    selectedMode = selectedMode,
-                    onModeChange = { selectedMode = it }
-                )
-            }
-
-            // Content Card
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-                color = Color(0xFFF5F5F5),
-                shadowElevation = 8.dp
-            ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        // Storage Indicator
-                        StorageIndicator(
-                            usedStorage = 2.3f,
-                            totalStorage = 5.0f,
+                // Content Card
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+                    color = Color(0xFFF5F5F5),
+                    shadowElevation = 8.dp
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp)
-                        )
-
-                        // Content List
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(bottom = 80.dp)
+                                .fillMaxSize()
+                                .padding(16.dp)
                         ) {
-                            when (selectedMode) {
-                                ViewMode.PROJECTS -> {
-                                    items(projects) { project ->
-                                        ProjectItem(
-                                            project = project,
-                                            onClick = onProjectClick
-                                        )
+                            // Storage Indicator
+                            StorageIndicator(
+                                usedStorage = 2.3f,
+                                totalStorage = 5.0f,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 16.dp)
+                            )
+
+                            // Content List
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(bottom = 80.dp)
+                            ) {
+                                when (selectedMode) {
+                                    ViewMode.PROJECTS -> {
+                                        items(projects) { project ->
+                                            ProjectItem(
+                                                project = project,
+                                                onClick = onProjectClick
+                                            )
+                                        }
                                     }
-                                }
-                                ViewMode.AUDIO -> {
-                                    items(audioProjects) { audioProject ->
-                                        AudioProjectItem(
-                                            audioProject = audioProject,
-                                            onClick = onAudioProjectClick
-                                        )
+
+                                    ViewMode.AUDIO -> {
+                                        items(audioProjects) { audioProject ->
+                                            AudioProjectItem(
+                                                audioProject = audioProject,
+                                                onClick = onAudioProjectClick
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -452,6 +465,6 @@ private fun formatDate(timestamp: Long): String {
 @Composable
 fun ProjectScreenPreview() {
     MaterialTheme {
-        ProjectScreen()
+        ProjectScreen(rememberNavController())
     }
 }

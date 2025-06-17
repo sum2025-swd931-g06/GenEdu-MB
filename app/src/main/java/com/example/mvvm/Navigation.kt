@@ -10,15 +10,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mvvm.ui.navigation.BottomNavHost
+import com.example.mvvm.ui.screen.account.AccountScreen
 import com.example.mvvm.ui.screen.home.HomeScreen
 import com.example.mvvm.ui.screen.home.HomeViewModel
 import com.example.mvvm.ui.screen.intro.IntroScreen
+import com.example.mvvm.ui.screen.project.ProjectScreen
+import com.example.mvvm.ui.screen.projectdetail.ProjectDetailScreen
 
 sealed class Screen(val route: String) {
     object Intro : Screen("intro")
     object Home : Screen("home")
-    object Detail : Screen("detail")
-    object AddOrEdit : Screen("addOrEdit")
+    object Project: Screen("project")
+    object ProjectDetail: Screen("projectDetail")
+    object UserProfile: Screen("userProfile")
 }
 
 //https://developer.android.com/topic/architecture
@@ -57,7 +61,7 @@ fun Navigation(
         }
     } else {
         // For login/auth screens without bottom nav
-        NavHost(navController = navController, startDestination = Screen.Intro.route) {
+        NavHost(navController = navController, startDestination = Screen.Home.route) {
             composable(Screen.Intro.route) {
                 IntroScreen(
                     navController = navController,
@@ -68,6 +72,30 @@ fun Navigation(
                 )
             }
 
+            composable(Screen.Home.route){
+                HomeScreen(
+                    navController = navController,
+                    viewModel = hiltViewModel<HomeViewModel>()
+                )
+            }
+
+            composable(Screen.Project.route){
+                ProjectScreen(
+                    navController = navController
+                )
+            }
+
+            composable(Screen.ProjectDetail.route){
+                ProjectDetailScreen(
+                    navController = navController
+                )
+            }
+
+            composable(Screen.UserProfile.route){
+                AccountScreen(
+                    navController = navController
+                )
+            }
 
         }
     }

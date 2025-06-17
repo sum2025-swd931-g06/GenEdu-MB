@@ -2,6 +2,8 @@ package com.example.mvvm.ui.screen.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -21,6 +24,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -29,27 +33,32 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mvvm.R
+import com.example.mvvm.Screen
 import com.example.mvvm.mock.sampleProjects
 import com.example.mvvm.models.Project
+import com.example.mvvm.utils.navigateTo
+import com.example.mvvm.utils.navigateToHome
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun HomeScreen(
-    navHostController: NavHostController,
+    navController: NavHostController,
     viewModel: HomeViewModel,
     username: String = "Fukada 🐢",
     projects: List<Project> = sampleProjects
@@ -92,16 +101,16 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(R.drawable.btn_1), // your illustration
+                    painter = painterResource(R.drawable.earth_100), // your illustration
                     contentDescription = null,
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier.size(120.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(text = "Unlimited Storage", fontSize = 14.sp)
                     Text(
                         text = "$30/year",
-                        fontSize = 20.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(text = "Offer till May 26", fontSize = 12.sp)
@@ -122,11 +131,23 @@ fun HomeScreen(
         // Features row
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            FeatureItem(R.drawable.ic_launcher_background, "Project")
-            FeatureItem(R.drawable.ic_launcher_background, "Audio")
-            FeatureItem(R.drawable.ic_launcher_background, "Profile")
+            FeatureItem(
+                iconRes = R.drawable.presentation_100,
+                label = "Project",
+                navigateTo = { navigateTo(navController, Screen.Project) }
+            )
+            FeatureItem(
+                iconRes = R.drawable.audio_100,
+                label = "Audio",
+                navigateTo = { navigateTo(navController, Screen.Project) }
+            )
+            FeatureItem(
+                iconRes = R.drawable.profile_100,
+                label = "Profile",
+                navigateTo = { navigateTo(navController, Screen.UserProfile) }
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -137,50 +158,98 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("Recents Project", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Text("View all", color = Color.Gray, fontSize = 14.sp)
+            Text("View all", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.clickable {
+                navigateTo(navController, Screen.Project)
+            })
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Project list
         projects.forEach { project ->
-            ProjectCard(project)
+            ProjectCard(navController, project)
             Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
 
 @Composable
-fun FeatureItem(iconRes: Int, label: String) {
+fun FeatureItem(iconRes: Int, label: String, navigateTo: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Card(
-            shape = RoundedCornerShape(12.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp,
+                pressedElevation = 2.dp,
+                hoveredElevation = 8.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ),
+            modifier = Modifier
+                .width(110.dp)
+                .height(130.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(bounded = true)
+                ) {
+                    navigateTo()
+                }
         ) {
-            Box(
+            Column(
                 modifier = Modifier
-                    .size(64.dp)
-                    .background(Color.White),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Image(painter = painterResource(iconRes), contentDescription = label)
+                // Icon container with subtle background
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        modifier = Modifier.size(100.dp),
+                        painter = painterResource(iconRes),
+                        contentDescription = label,
+                    )
+                }
+
+                // Label with better typography
+                Text(
+                    text = label,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 14.sp
+                )
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(label, fontSize = 14.sp)
     }
 }
 
 @Composable
-fun ProjectCard(project: Project) {
+fun ProjectCard(navController: NavHostController, project: Project) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.padding(12.dp).clickable {
+                navigateTo(navController, Screen.ProjectDetail)
+            },
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = Icons.Default.Email,
@@ -211,7 +280,7 @@ fun ProjectCard(project: Project) {
 @Composable
 fun HomeScreenPreview() {
     val navController = rememberNavController()
-    
+
     MaterialTheme {
         HomeScreen(
             navController,
@@ -220,5 +289,5 @@ fun HomeScreenPreview() {
             projects = sampleProjects
         )
     }
-    
+
 }
