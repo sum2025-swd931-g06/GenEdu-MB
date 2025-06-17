@@ -1,7 +1,6 @@
 package com.example.mvvm.ui.screen.project
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -42,10 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -341,115 +337,109 @@ fun ProjectScreen(
 
     val audioProjects = projects.mapNotNull { it.audioProject }
 
-    Surface(
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            LightPurple,
-                            MainColor,
-                            DarkPurple
-                        )
+            .statusBarsPadding()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        LightPurple,
+                        MainColor,
+                        DarkPurple
                     )
                 )
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                // Status bar spacer
-                Spacer(modifier = Modifier.height(WindowInsets.statusBars.getTop(LocalDensity.current).dp))
-
-                // Header
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            modifier = Modifier.clickable {
-                                navigateToHome(navController)
-                            },
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.White
-                        )
-                    }
-
-                    Text(
-                        text = "Dự án của tôi",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-
-                    Spacer(modifier = Modifier.width(48.dp))
-                }
-
-                // View Toggle
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    ViewToggle(
-                        selectedMode = selectedMode,
-                        onModeChange = { selectedMode = it }
+            )
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Header
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        modifier = Modifier.clickable {
+                            navigateToHome(navController)
+                        },
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
                     )
                 }
 
-                // Content Card
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-                    color = Color(0xFFF5F5F5),
-                    shadowElevation = 8.dp
-                ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Column(
+                Text(
+                    text = "Dự án của tôi",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Spacer(modifier = Modifier.width(48.dp))
+            }
+
+            // View Toggle
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                ViewToggle(
+                    selectedMode = selectedMode,
+                    onModeChange = { selectedMode = it }
+                )
+            }
+
+            // Content Card
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+                color = Color(0xFFF5F5F5),
+                shadowElevation = 8.dp
+            ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        // Storage Indicator
+                        StorageIndicator(
+                            usedStorage = 2.3f,
+                            totalStorage = 5.0f,
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                        )
+
+                        // Content List
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(bottom = 80.dp)
                         ) {
-                            // Storage Indicator
-                            StorageIndicator(
-                                usedStorage = 2.3f,
-                                totalStorage = 5.0f,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 16.dp)
-                            )
-
-                            // Content List
-                            LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(bottom = 80.dp)
-                            ) {
-                                when (selectedMode) {
-                                    ViewMode.PROJECTS -> {
-                                        items(projects) { project ->
-                                            ProjectItem(
-                                                project = project,
-                                                onClick = { onProjectClick(it) }
-                                            )
-                                        }
+                            when (selectedMode) {
+                                ViewMode.PROJECTS -> {
+                                    items(projects) { project ->
+                                        ProjectItem(
+                                            project = project,
+                                            onClick = { onProjectClick(it) }
+                                        )
                                     }
+                                }
 
-                                    ViewMode.AUDIO -> {
-                                        items(audioProjects) { audioProject ->
-                                            AudioProjectItem(
-                                                audioProject = audioProject,
-                                                onClick = onAudioProjectClick
-                                            )
-                                        }
+                                ViewMode.AUDIO -> {
+                                    items(audioProjects) { audioProject ->
+                                        AudioProjectItem(
+                                            audioProject = audioProject,
+                                            onClick = onAudioProjectClick
+                                        )
                                     }
                                 }
                             }
@@ -459,6 +449,7 @@ fun ProjectScreen(
             }
         }
     }
+
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

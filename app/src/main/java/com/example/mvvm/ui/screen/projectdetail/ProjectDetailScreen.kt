@@ -87,358 +87,355 @@ fun ProjectDetailScreen(
         )
     }
 
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            LightPurple,
-                            MainColor,
-                            DarkPurple
-                        )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        LightPurple,
+                        MainColor,
+                        DarkPurple
                     )
                 )
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                // Status bar spacer
-                Spacer(modifier = Modifier.height(WindowInsets.statusBars.getTop(LocalDensity.current).dp))
-
-                // Header
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            modifier = Modifier.clickable {
-                                navigateToHome(navController)
-                            },
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.White
-                        )
-                    }
-
-                    Text(
-                        text = "Chi tiết dự án",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
+            )
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Header
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        modifier = Modifier.clickable {
+                            navigateToHome(navController)
+                        },
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
                     )
-
-                    IconButton(onClick = { onShareClick(project) }) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = "Share",
-                            tint = Color.White
-                        )
-                    }
                 }
 
-                // Content Card
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-                    color = Color(0xFFF5F5F5),
-                    shadowElevation = 8.dp
-                ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(24.dp)
-                                .verticalScroll(rememberScrollState())
+                Text(
+                    text = "Chi tiết dự án",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+
+                IconButton(onClick = { onShareClick(project) }) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share",
+                        tint = Color.White
+                    )
+                }
+            }
+
+            // Content Card
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+                color = Color(0xFFF5F5F5),
+                shadowElevation = 8.dp
+            ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(24.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        // Project Header
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
-                            // Project Header
+                            Column(
+                                modifier = Modifier.padding(20.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                // Project icon
+                                Box(
+                                    modifier = Modifier
+                                        .size(72.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFFE3F2FD)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = FontAwesomeIcons.Regular.FileArchive,
+                                        contentDescription = null,
+                                        tint = Color(0xFF2196F3),
+                                        modifier = Modifier.size(36.dp)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Text(
+                                    text = project.title,
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF212121),
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    ProjectStatusChip(project.status)
+
+                                    Spacer(modifier = Modifier.width(12.dp))
+
+                                    Text(
+                                        text = "${project.slideNum} slides",
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF757575)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = FontAwesomeIcons.Regular.Calendar,
+                                        contentDescription = null,
+                                        tint = Color(0xFF9E9E9E),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    val formattedDate = formatDate(project.creationTime)
+                                    Text(
+                                        text = "Tạo ngày $formattedDate",
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF9E9E9E)
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Project Details
+                        Text(
+                            text = "Slides",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF212121)
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Slides list or preview
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                repeat(minOf(3, project.slideNum)) { index ->
+                                    SlidePreviewItem(
+                                        slideNumber = index + 1,
+                                        title = "Slide ${index + 1}"
+                                    )
+
+                                    if (index < minOf(2, project.slideNum - 1)) {
+                                        Divider(
+                                            modifier = Modifier.padding(vertical = 12.dp),
+                                            color = Color(0xFFEEEEEE)
+                                        )
+                                    }
+                                }
+
+                                if (project.slideNum > 3) {
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    Text(
+                                        text = "Xem tất cả ${project.slideNum} slides",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 8.dp),
+                                        textAlign = TextAlign.Center,
+                                        color = Color(0xFF2196F3),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Audio Player
+                        if (project.audioProject != null && project.audioProject.status == AudioProjectStatus.COMPLETED && project.audioProject.audioUrl != null) {
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                                 colors = CardDefaults.cardColors(containerColor = Color.White)
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(20.dp),
+                                    modifier = Modifier.padding(16.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    // Project icon
-                                    Box(
-                                        modifier = Modifier
-                                            .size(72.dp)
-                                            .clip(CircleShape)
-                                            .background(Color(0xFFE3F2FD)),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = FontAwesomeIcons.Regular.FileArchive,
-                                            contentDescription = null,
-                                            tint = Color(0xFF2196F3),
-                                            modifier = Modifier.size(36.dp)
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
                                     Text(
-                                        text = project.title,
-                                        fontSize = 22.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF212121),
-                                        textAlign = TextAlign.Center
-                                    )
-
-                                    Spacer(modifier = Modifier.height(8.dp))
-
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        ProjectStatusChip(project.status)
-
-                                        Spacer(modifier = Modifier.width(12.dp))
-
-                                        Text(
-                                            text = "${project.slideNum} slides",
-                                            fontSize = 14.sp,
-                                            color = Color(0xFF757575)
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(8.dp))
-
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(
-                                            imageVector = FontAwesomeIcons.Regular.Calendar,
-                                            contentDescription = null,
-                                            tint = Color(0xFF9E9E9E),
-                                            modifier = Modifier.size(16.dp)
-                                        )
-
-                                        Spacer(modifier = Modifier.width(8.dp))
-
-                                        val formattedDate = formatDate(project.creationTime)
-                                        Text(
-                                            text = "Tạo ngày $formattedDate",
-                                            fontSize = 14.sp,
-                                            color = Color(0xFF9E9E9E)
-                                        )
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            // Project Details
-                            Text(
-                                text = "Slides",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF212121)
-                            )
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            // Slides list or preview
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = Color.White)
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    repeat(minOf(3, project.slideNum)) { index ->
-                                        SlidePreviewItem(
-                                            slideNumber = index + 1,
-                                            title = "Slide ${index + 1}"
-                                        )
-
-                                        if (index < minOf(2, project.slideNum - 1)) {
-                                            Divider(
-                                                modifier = Modifier.padding(vertical = 12.dp),
-                                                color = Color(0xFFEEEEEE)
-                                            )
-                                        }
-                                    }
-
-                                    if (project.slideNum > 3) {
-                                        Spacer(modifier = Modifier.height(12.dp))
-
-                                        Text(
-                                            text = "Xem tất cả ${project.slideNum} slides",
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 8.dp),
-                                            textAlign = TextAlign.Center,
-                                            color = Color(0xFF2196F3),
-                                            fontWeight = FontWeight.Medium
-                                        )
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            // Audio Player
-                            if (project.audioProject != null && project.audioProject.status == AudioProjectStatus.COMPLETED && project.audioProject.audioUrl != null) {
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = Color.White)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(16.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "Audio Player",
-                                            fontSize = 18.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF212121)
-                                        )
-
-                                        Spacer(modifier = Modifier.height(16.dp))
-
-                                        // Audio control buttons
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceEvenly,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            IconButton(onClick = { /* Rewind logic */ }) {
-                                                Icon(
-                                                    imageVector = Icons.Default.ArrowBack,
-                                                    contentDescription = "Rewind 10 seconds",
-                                                    tint = Color(0xFF2196F3)
-                                                )
-                                            }
-
-                                            FloatingActionButton(
-                                                onClick = {
-                                                    isPlaying = !isPlaying
-                                                    if (isPlaying) {
-                                                        onPlayAudio(project.audioProject.audioUrl)
-                                                    }
-                                                },
-                                                containerColor = Color(0xFF2196F3),
-                                                contentColor = Color.White,
-                                                modifier = Modifier.size(56.dp)
-                                            ) {
-                                                Icon(
-                                                    imageVector = if (isPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
-                                                    contentDescription = if (isPlaying) "Pause" else "Play",
-                                                    modifier = Modifier.size(32.dp)
-                                                )
-                                            }
-
-                                            IconButton(onClick = { /* Fast forward logic */ }) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Close,
-                                                    contentDescription = "Forward 10 seconds",
-                                                    tint = Color(0xFF2196F3)
-                                                )
-                                            }
-                                        }
-
-                                        Spacer(modifier = Modifier.height(16.dp))
-
-                                        // Progress bar
-                                        Slider(
-                                            value = currentPosition.toFloat(),
-                                            onValueChange = { currentPosition = it.toInt() },
-                                            valueRange = 0f..project.audioProject.durationSeconds.toFloat(),
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-
-                                        // Time indicators
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Text(
-                                                text = formatDuration(currentPosition),
-                                                fontSize = 12.sp,
-                                                color = Color(0xFF757575)
-                                            )
-
-                                            Text(
-                                                text = formatDuration(project.audioProject.durationSeconds),
-                                                fontSize = 12.sp,
-                                                color = Color(0xFF757575)
-                                            )
-                                        }
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.height(24.dp))
-                            }
-
-                            // Text Content
-                            Text(
-                                text = "Nội dung văn bản",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF212121)
-                            )
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = Color.White)
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    project.audioProject?.let {
-                                        Text(
-                                            text = it.textContent,
-                                            fontSize = 15.sp,
-                                            color = Color(0xFF424242),
-                                            lineHeight = 24.sp
-                                        )
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            // Project statistics or additional info
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = Color.White)
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Text(
-                                        text = "Thông tin thêm",
-                                        fontSize = 16.sp,
+                                        text = "Audio Player",
+                                        fontSize = 18.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color(0xFF212121)
                                     )
 
-                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                    StatItem("Tổng số slides", project.slideNum.toString())
-                                    StatItem("Trạng thái", project.status.name.replace("_", " "))
-                                    project.audioProject?.let { formatDuration(it.durationSeconds) }
-                                        ?.let {
-                                            StatItem(
-                                                "Thời lượng",
-                                                it
+                                    // Audio control buttons
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceEvenly,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        IconButton(onClick = { /* Rewind logic */ }) {
+                                            Icon(
+                                                imageVector = Icons.Default.ArrowBack,
+                                                contentDescription = "Rewind 10 seconds",
+                                                tint = Color(0xFF2196F3)
                                             )
                                         }
-                                    project.audioProject?.voiceType?.let {
+
+                                        FloatingActionButton(
+                                            onClick = {
+                                                isPlaying = !isPlaying
+                                                if (isPlaying) {
+                                                    onPlayAudio(project.audioProject.audioUrl)
+                                                }
+                                            },
+                                            containerColor = Color(0xFF2196F3),
+                                            contentColor = Color.White,
+                                            modifier = Modifier.size(56.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = if (isPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
+                                                contentDescription = if (isPlaying) "Pause" else "Play",
+                                                modifier = Modifier.size(32.dp)
+                                            )
+                                        }
+
+                                        IconButton(onClick = { /* Fast forward logic */ }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = "Forward 10 seconds",
+                                                tint = Color(0xFF2196F3)
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    // Progress bar
+                                    Slider(
+                                        value = currentPosition.toFloat(),
+                                        onValueChange = { currentPosition = it.toInt() },
+                                        valueRange = 0f..project.audioProject.durationSeconds.toFloat(),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+
+                                    // Time indicators
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = formatDuration(currentPosition),
+                                            fontSize = 12.sp,
+                                            color = Color(0xFF757575)
+                                        )
+
+                                        Text(
+                                            text = formatDuration(project.audioProject.durationSeconds),
+                                            fontSize = 12.sp,
+                                            color = Color(0xFF757575)
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
+
+                        // Text Content
+                        Text(
+                            text = "Nội dung văn bản",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF212121)
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                project.audioProject?.let {
+                                    Text(
+                                        text = it.textContent,
+                                        fontSize = 15.sp,
+                                        color = Color(0xFF424242),
+                                        lineHeight = 24.sp
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Project statistics or additional info
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "Thông tin thêm",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF212121)
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                StatItem("Tổng số slides", project.slideNum.toString())
+                                StatItem("Trạng thái", project.status.name.replace("_", " "))
+                                project.audioProject?.let { formatDuration(it.durationSeconds) }
+                                    ?.let {
                                         StatItem(
-                                            "Loại giọng đọc",
+                                            "Thời lượng",
                                             it
                                         )
                                     }
+                                project.audioProject?.voiceType?.let {
                                     StatItem(
-                                        "Ngày chỉnh sửa cuối",
-                                        formatDate(project.creationTime)
+                                        "Loại giọng đọc",
+                                        it
                                     )
-                                    StatItem("ID dự án", project.id)
                                 }
+                                StatItem(
+                                    "Ngày chỉnh sửa cuối",
+                                    formatDate(project.creationTime)
+                                )
+                                StatItem("ID dự án", project.id)
                             }
                         }
                     }
@@ -446,6 +443,7 @@ fun ProjectDetailScreen(
             }
         }
     }
+
 }
 
 @Composable
