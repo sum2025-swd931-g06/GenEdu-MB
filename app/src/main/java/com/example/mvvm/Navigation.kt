@@ -1,7 +1,9 @@
 package com.example.mvvm
 
 import android.content.Intent
+import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
@@ -13,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mvvm.ui.navigation.BottomNavHost
 import com.example.mvvm.ui.screen.account.AccountScreen
+import com.example.mvvm.ui.screen.account.ProfileViewModel
 import com.example.mvvm.ui.screen.home.HomeScreen
 import com.example.mvvm.ui.screen.home.HomeViewModel
 import com.example.mvvm.ui.screen.intro.IntroScreen
@@ -35,6 +38,7 @@ sealed class Screen(val route: String) {
 //https://developer.android.com/develop/ui/compose/libraries#hilt
 //https://github.com/android/architecture-samples
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation(
     authResultLauncher: ActivityResultLauncher<Intent>? = null,
@@ -44,6 +48,7 @@ fun Navigation(
     val mainViewModel: MainViewModel = hiltViewModel()
     val mainState = mainViewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val accountViewModel = hiltViewModel<ProfileViewModel>()
 
         // For login/auth screens without bottom nav
         NavHost(navController = navController, startDestination = Screen.Home.route) {
@@ -91,6 +96,7 @@ fun Navigation(
                 AccountScreen(
                     navController = navController,
                     mainViewModel = mainViewModel,
+                    accountViewModel = accountViewModel
                 )
             }
 
