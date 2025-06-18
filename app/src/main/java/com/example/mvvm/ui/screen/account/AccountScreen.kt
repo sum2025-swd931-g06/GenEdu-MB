@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mvvm.MainViewModel
@@ -57,49 +58,18 @@ import androidx.compose.material3.Divider as HorizontalDivider
 @Composable
 fun AccountScreen(
     navController: NavHostController,
+    accountViewModel: ProfileViewModel,
     mainViewModel: MainViewModel,
     onBackClick: () -> Unit = {},
     onMenuItemClick: (MenuItem) -> Unit = {}
 ) {
-
     val userData = mainViewModel.userData.collectAsState().value
-
-    // Placeholder for the Account screen content
-    // This will be implemented later
-    // You can use MenuItem data class to create menu items for the account screen
-    val menuItem = listOf(
-        MenuItem(
-            icon = Icons.Default.Person,
-            title = "Họ tên: ${userData?.name ?: "Chưa cập nhật"}",
-            hasArrow = false
-        ),
-        MenuItem(
-            icon = Icons.Default.Email,
-            title = "Email: ${userData?.email ?: "Chưa cập nhật"}",
-            hasArrow = false
-        ),
-        MenuItem(
-            icon = Icons.Default.AccountBox,
-            title = "Số CCCD/Căn Cước: ${userData?.idNumber ?: "Chưa cập nhật"}",
-            hasArrow = true
-        ),
-        MenuItem(
-            icon = Icons.Default.ShoppingCart,
-            title = "Quản lý phương thức thanh toán",
-            hasArrow = true
-        ),
-        MenuItem(
-            icon = Icons.Default.Clear,
-            title = "Xóa tài khoản",
-            hasArrow = false,
-            isDestructive = true
-        )
-    )
+    val profileUiState = accountViewModel.uiState.collectAsState().value
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding() // Built-in Compose padding
+            .statusBarsPadding()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
@@ -110,11 +80,8 @@ fun AccountScreen(
                 )
             )
     ) {
-        // Here you can use the menuItem list to create your account screen UI
-        // For example, you can use LazyColumn to display the menu items
-        // and handle onClick events for each item
         Column(modifier = Modifier.fillMaxSize()) {
-            //header
+            // Header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,12 +89,9 @@ fun AccountScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onBackClick)
-                {
+                IconButton(onClick = onBackClick) {
                     Icon(
-                        modifier = Modifier.clickable {
-                            navigateToHome(navController)
-                        },
+                        modifier = Modifier.clickable { navigateToHome(navController) },
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White
@@ -140,7 +104,6 @@ fun AccountScreen(
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(modifier = Modifier.width(48.dp))
-
             }
 
             // Profile Section
@@ -149,8 +112,7 @@ fun AccountScreen(
                     .fillMaxWidth()
                     .padding(vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
-            )
-            {
+            ) {
                 // Avatar
                 Box(
                     modifier = Modifier
@@ -175,14 +137,20 @@ fun AccountScreen(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
 
-                //Name
+                // Name (from profile or fallback to userData)
+                val displayName = when (profileUiState) {
+                    is ProfileUiState.Success -> profileUiState.profiles.firstOrNull()?.name
+                    else -> null
+                } ?: userData?.name ?: "Guest"
+
                 Text(
-                    text = userData?.name ?: "Guest",
+                    text = displayName,
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
+
             // Content Card
             Surface(
                 modifier = Modifier
@@ -198,15 +166,52 @@ fun AccountScreen(
                         .padding(16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    // Menu Items
-                    menuItem.forEach { item ->
-                        MenuItemRow(
-                            item = item,
-                            onClick = { onMenuItemClick(item) }
-                        )
+                    when (profileUiState) {
+                        is ProfileUiState.Loading -> {
+                            Text("Đang tải thông tin...", color = Color.Gray)
+                        }
+                        is ProfileUiState.Error -> {
+                            Text("Lỗi: ${profileUiState.message}", color = Color.Red)
+                        }
+                        is ProfileUiState.Success -> {
+                            val profile = profileUiState.profiles.firstOrNull()
+                            val menuItems = listOf(
+                                MenuItem(
+                                    icon = Icons.Default.Person,
+                                    title = "Họ tên: ${profile?.name ?: userData?.name ?: "Chưa cập nhật"}",
+                                    hasArrow = false
+                                ),
+                                MenuItem(
+                                    icon = Icons.Default.Email,
+                                    title = "Email: ${profile?.email ?: userData?.email ?: "Chưa cập nhật"}",
+                                    hasArrow = false
+                                ),
+                                MenuItem(
+                                    icon = Icons.Default.AccountBox,
+                                    title = "Số CCCD/Căn Cước: ${userData?.idNumber ?: "Chưa cập nhật"}",
+                                    hasArrow = true
+                                ),
+                                MenuItem(
+                                    icon = Icons.Default.ShoppingCart,
+                                    title = "Quản lý phương thức thanh toán",
+                                    hasArrow = true
+                                ),
+                                MenuItem(
+                                    icon = Icons.Default.Clear,
+                                    title = "Xóa tài khoản",
+                                    hasArrow = false,
+                                    isDestructive = true
+                                )
+                            )
+                            menuItems.forEach { item ->
+                                MenuItemRow(
+                                    item = item,
+                                    onClick = { onMenuItemClick(item) }
+                                )
+                            }
+                        }
                     }
 
-                    // Divider
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 8.dp),
                         color = Color(0xFFE0E0E0)
@@ -224,12 +229,8 @@ fun AccountScreen(
                     )
 
                     Spacer(modifier = Modifier.height(50.dp))
-
                 }
-
             }
-
-
         }
     }
 }
@@ -240,6 +241,7 @@ fun AccountInfoScreenPreview() {
     MaterialTheme {
         AccountScreen(
             navController = rememberNavController(),
+            accountViewModel = hiltViewModel<ProfileViewModel>(),
             mainViewModel = MainViewModel()
         )
     }
