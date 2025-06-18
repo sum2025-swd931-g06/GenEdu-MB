@@ -8,16 +8,18 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mvvm.MainViewModel
 import com.example.mvvm.configs.KeycloakAuthConfig
 import com.example.mvvm.enum.LoadStatus
 import com.example.mvvm.models.UserData
 import com.example.mvvm.repositories.AuthRepository
+import com.example.mvvm.repositories.SharedPreferencesTokenProvider
 import com.example.mvvm.repositories.apis.keycloak.KeycloakRepository
-import com.example.mvvm.utils.fetchUserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -38,6 +40,8 @@ data class LoginUiState(
 class IntroViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val keycloakRepository: KeycloakRepository,
+    private val tokenProvider: SharedPreferencesTokenProvider,
+    private val mainViewModel: MainViewModel
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -134,28 +138,46 @@ class IntroViewModel @Inject constructor(
     private fun exchangeTokens(authResponse: AuthorizationResponse) {
         val tokenRequest = authResponse.createTokenExchangeRequest()
 
+        _uiState.value = _uiState.value.copy(status = LoadStatus.Loading())
+
         authService?.performTokenRequest(tokenRequest) { tokenResponse, exception ->
             viewModelScope.launch {
-                when {
-                    tokenResponse != null -> {
+                try {
+                    if (tokenResponse != null) {
                         val accessToken = tokenResponse.accessToken
+                        val refreshToken = tokenResponse.refreshToken
+
                         if (accessToken != null) {
+                            // Store both tokens
                             authRepository.storeToken(accessToken)
 
-                            // Fetch user data using token introspection
-                            try {
-                                val userData = keycloakRepository.introspectToken(accessToken)
-                                _uiState.value = _uiState.value.copy(
-                                    isAuthenticated = true,
-                                    accessToken = accessToken,
-                                    userData = userData.getOrNull(),
-                                    status = LoadStatus.Success()
-                                )
-                            } catch (e: Exception) {
-                                _uiState.value = _uiState.value.copy(
-                                    isAuthenticated = true,
-                                    accessToken = accessToken,
-                                    status = LoadStatus.Error("Failed to fetch user data: ${e.message}")
+                            // Also store refresh token - add this method to AuthRepository
+                            if (refreshToken != null) {
+                                (tokenProvider as? SharedPreferencesTokenProvider)?.saveRefreshToken(refreshToken)
+                            }
+
+                            // Token introspection with timeout
+                            withTimeout(5000) {
+                                keycloakRepository.introspectToken(accessToken).fold(
+                                    onSuccess = { userData ->
+                                        // Update both ViewModels
+                                        _uiState.value = _uiState.value.copy(
+                                            isAuthenticated = true,
+                                            accessToken = accessToken,
+                                            userData = userData,
+                                            status = LoadStatus.Success()
+                                        )
+
+                                        // This is critical - update MainViewModel
+                                        mainViewModel.setUserData(userData)
+                                        mainViewModel.setAuthenticated(true)
+                                    },
+                                    onFailure = { error ->
+                                        _uiState.value = _uiState.value.copy(
+                                            status = LoadStatus.Error("Token validation failed: ${error.message}")
+                                        )
+                                        tokenProvider.clearTokens()
+                                    }
                                 )
                             }
                         } else {
@@ -163,8 +185,16 @@ class IntroViewModel @Inject constructor(
                                 status = LoadStatus.Error("No access token received")
                             )
                         }
+                    } else if (exception != null) {
+                        _uiState.value = _uiState.value.copy(
+                            status = LoadStatus.Error("Token exchange failed: ${exception.message}")
+                        )
                     }
-                    // Existing error handling...
+                } catch (e: Exception) {
+                    _uiState.value = _uiState.value.copy(
+                        status = LoadStatus.Error("Authentication error: ${e.message}")
+                    )
+                    tokenProvider.clearTokens()
                 }
             }
         }
