@@ -41,7 +41,6 @@ class IntroViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val keycloakRepository: KeycloakRepository,
     private val tokenProvider: SharedPreferencesTokenProvider,
-    private val mainViewModel: MainViewModel
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -53,6 +52,15 @@ class IntroViewModel @Inject constructor(
     init {
         initializeAuthService()
         checkExistingAuth()
+    }
+
+    fun updateMainViewModel(
+        mainViewModel: MainViewModel,
+        userData: UserData,
+        isAuthenticated: Boolean
+    ) {
+        mainViewModel.setUserData(userData)
+        mainViewModel.setAuthenticated(isAuthenticated)
     }
 
     private fun initializeAuthService() {
@@ -153,7 +161,7 @@ class IntroViewModel @Inject constructor(
 
                             // Also store refresh token - add this method to AuthRepository
                             if (refreshToken != null) {
-                                (tokenProvider as? SharedPreferencesTokenProvider)?.saveRefreshToken(refreshToken)
+                                tokenProvider.saveRefreshToken(refreshToken)
                             }
 
                             // Token introspection with timeout
@@ -167,10 +175,6 @@ class IntroViewModel @Inject constructor(
                                             userData = userData,
                                             status = LoadStatus.Success()
                                         )
-
-                                        // This is critical - update MainViewModel
-                                        mainViewModel.setUserData(userData)
-                                        mainViewModel.setAuthenticated(true)
                                     },
                                     onFailure = { error ->
                                         _uiState.value = _uiState.value.copy(

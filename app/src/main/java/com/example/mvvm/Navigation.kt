@@ -50,7 +50,7 @@ fun Navigation(
     val context = LocalContext.current
     val accountViewModel = hiltViewModel<ProfileViewModel>()
 
-        // For login/auth screens without bottom nav
+    // For login/auth screens without bottom nav
     NavHost(navController = navController, startDestination = Screen.Intro.route) {
         composable(Screen.Intro.route) {
             IntroScreen(
@@ -62,43 +62,42 @@ fun Navigation(
             )
         }
 
-            composable(Screen.Home.route){
-                HomeScreen(
-                    navController = navController,
-                    viewModel = hiltViewModel<HomeViewModel>(),
-                    mainViewModel = mainViewModel
-                )
-            }
-
-            composable(Screen.Project.route){
-                ProjectScreen(
-                    navController = navController
-                )
-            }
-
-            composable(
-                route = Screen.ProjectDetail.route,
-                arguments = listOf(
-                    navArgument("projectId") {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    }
-                )
-            ) { backStackEntry ->
-                val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
-                ProjectDetailScreen(
-                    navController = navController,
-                    projectId = projectId
-                )
-            }
-
-            composable(Screen.UserProfile.route){
-                AccountScreen(
-                    navController = navController,
-                    mainViewModel = mainViewModel,
-                    accountViewModel = accountViewModel
-                )
-            }
-
+        composable(Screen.Home.route) {
+            HomeScreen(
+                navController = navController,
+                viewModel = hiltViewModel<HomeViewModel>(),
+                mainViewModel = mainViewModel
+            )
         }
+
+        composable(Screen.Project.route) {
+            ProjectScreen(
+                navController = navController
+            )
+        }
+
+        composable(
+            route = Screen.ProjectDetail.route,
+            arguments = listOf(
+                navArgument("projectId") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) { backStackEntry ->
+            val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+            ProjectDetailScreen(
+                navController = navController,
+                projectId = projectId
+            )
+        }
+
+        composable(Screen.UserProfile.route) {
+            AccountScreen(
+                navController = navController,
+                mainViewModel = mainViewModel,
+                accountViewModel = accountViewModel
+            )
+        }
+    }
 }

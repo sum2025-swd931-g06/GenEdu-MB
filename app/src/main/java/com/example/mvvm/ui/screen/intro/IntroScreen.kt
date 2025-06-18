@@ -63,14 +63,13 @@ fun IntroScreen(
 
     // Handle authentication success
     LaunchedEffect(state.value.isAuthenticated, state.value.userData) {
-        if (state.value.isAuthenticated) {
-            // Set authentication status
-            mainViewModel.setAuthenticated(true)
-
-            // Pass user data to MainViewModel
-            state.value.userData?.let { userData ->
-                mainViewModel.setUserData(userData)
-            }
+        if (state.value.isAuthenticated && state.value.userData != null) {
+            // Update MainViewModel using the new method
+            viewModel.updateMainViewModel(
+                mainViewModel,
+                state.value.userData!!,
+                true
+            )
 
             // Navigate to Home
             navController.navigate(Screen.Home.route) {
