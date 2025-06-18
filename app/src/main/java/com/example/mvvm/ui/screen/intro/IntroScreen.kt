@@ -2,6 +2,7 @@ package com.example.mvvm.ui.screen.intro
 
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -54,41 +55,38 @@ fun IntroScreen(
     val state = viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // Set the callback for auth results
-    LaunchedEffect(Unit) {
-        setAuthResultCallback { intent ->
-            viewModel.handleAuthResult(intent)
-        }
-    }
-
     // Handle authentication success
     LaunchedEffect(state.value.isAuthenticated, state.value.userData) {
         if (state.value.isAuthenticated && state.value.userData != null) {
-            // Update MainViewModel using the new method
+            // Log the state
+            Log.d("IntroScreen", "Auth state updated - authenticated: ${state.value.isAuthenticated}, userData: ${state.value.userData}")
+
+            // Update MainViewModel
             viewModel.updateMainViewModel(
-                mainViewModel,
-                state.value.userData!!,
-                true
+                mainViewModel = mainViewModel,
+                userData = state.value.userData!!,
+                isAuthenticated = true
             )
 
-            // Navigate to Home
+            // Navigate to Home screen
             navController.navigate(Screen.Home.route) {
                 popUpTo(Screen.Intro.route) { inclusive = true }
             }
         }
     }
 
-    // Handle errors
-    LaunchedEffect(state.value.status) {
-        if (state.value.status is LoadStatus.Error) {
-            mainViewModel.setError(state.value.status.description)
-            viewModel.resetStatus()
+    // Handle auth result callback
+    LaunchedEffect(Unit) {
+        setAuthResultCallback { intent ->
+            Log.d("IntroScreen", "Received auth result")
+            viewModel.handleAuthResult(intent)
         }
     }
 
     IntroScreenContent(
         status = state.value.status,
         onLoginClick = {
+            Log.d("IntroScreen", "Starting login flow")
             viewModel.startLogin(context, authResultLauncher)
         }
     )

@@ -4,8 +4,6 @@ import android.content.Context
 import com.example.mvvm.repositories.SharedPreferencesTokenProvider
 import com.example.mvvm.repositories.apis.keycloak.KeycloakApi
 import com.example.mvvm.repositories.apis.keycloak.KeycloakRepository
-import com.example.mvvm.repositories.apis.profile.ProfileApi
-import com.example.mvvm.repositories.apis.profile.ProfileRepository
 import com.example.mvvm.security.TokenProvider
 import dagger.Module
 import dagger.Provides
@@ -21,7 +19,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.CookieManager
 import java.net.CookiePolicy
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -103,32 +100,6 @@ class NetworkModule {
         tokenProvider: SharedPreferencesTokenProvider
     ): KeycloakRepository {
         return KeycloakRepository(api, tokenProvider)
-    }
-
-    //api station api
-    @Provides
-    @Singleton
-    fun provideProfileApi(
-        @Named("mockyBusRetrofit") retrofit: Retrofit
-    ): ProfileApi {
-        return retrofit.create(ProfileApi::class.java)
-    }
-
-    @Provides
-    @Named("mockyBusRetrofit")
-    @Singleton
-    fun provideMockyProfileRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(MOCKY_BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideProfileRepository(api: ProfileApi): ProfileRepository {
-        return ProfileRepository(api)
     }
 
     //Trai oi mocky ong de duoi nay 3 endpoint khac nha, tao nhu tren (dong 85 -> 109)

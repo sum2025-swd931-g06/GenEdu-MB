@@ -139,7 +139,7 @@ fun AccountScreen(
 
                 // Name (from profile or fallback to userData)
                 val displayName = when (profileUiState) {
-                    is ProfileUiState.Success -> profileUiState.profiles.firstOrNull()?.name
+                    is ProfileUiState.Success -> profileUiState.profile.name
                     else -> null
                 } ?: userData?.name ?: "Guest"
 
@@ -174,7 +174,7 @@ fun AccountScreen(
                             Text("Lỗi: ${profileUiState.message}", color = Color.Red)
                         }
                         is ProfileUiState.Success -> {
-                            val profile = profileUiState.profiles.firstOrNull()
+                            val profile = profileUiState.profile
                             val menuItems = listOf(
                                 MenuItem(
                                     icon = Icons.Default.Person,

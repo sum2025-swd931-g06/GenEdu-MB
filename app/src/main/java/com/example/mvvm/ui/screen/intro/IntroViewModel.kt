@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
@@ -25,6 +26,7 @@ import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.ClientSecretPost
 import net.openid.appauth.ResponseTypeValues
 import javax.inject.Inject
 
@@ -116,28 +118,37 @@ class IntroViewModel @Inject constructor(
     }
 
     fun handleAuthResult(intent: Intent?) {
-        if (intent == null) {
-            _uiState.value = _uiState.value.copy(
-                status = LoadStatus.Error("No auth result received")
-            )
-            return
-        }
+        viewModelScope.launch {
+            try {
+                Log.d("IntroViewModel", "Handling auth result")
+                _uiState.value = _uiState.value.copy(status = LoadStatus.Loading())
 
-        val response = AuthorizationResponse.fromIntent(intent)
-        val exception = AuthorizationException.fromIntent(intent)
+                val response = intent?.let { AuthorizationResponse.fromIntent(it) }
+                val exception = AuthorizationException.fromIntent(intent)
 
-        when {
-            response != null -> {
-                exchangeTokens(response)
-            }
-            exception != null -> {
+                when {
+                    response != null -> {
+                        Log.d("IntroViewModel", "Got auth response, exchanging tokens")
+                        Log.d("IntroViewModel", "Response: ${response.toString()}")
+                        exchangeTokens(response)
+                    }
+                    exception != null -> {
+                        Log.e("IntroViewModel", "Auth failed: ${exception.message}")
+                        _uiState.value = _uiState.value.copy(
+                            status = LoadStatus.Error("Authorization failed: ${exception.message}")
+                        )
+                    }
+                    else -> {
+                        Log.e("IntroViewModel", "No response received")
+                        _uiState.value = _uiState.value.copy(
+                            status = LoadStatus.Error("No response received")
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("IntroViewModel", "Auth error: ${e.message}")
                 _uiState.value = _uiState.value.copy(
-                    status = LoadStatus.Error("Auth failed: ${exception.message}")
-                )
-            }
-            else -> {
-                _uiState.value = _uiState.value.copy(
-                    status = LoadStatus.Error("Unknown authentication error")
+                    status = LoadStatus.Error("Authentication error: ${e.message}")
                 )
             }
         }
@@ -145,30 +156,41 @@ class IntroViewModel @Inject constructor(
 
     private fun exchangeTokens(authResponse: AuthorizationResponse) {
         val tokenRequest = authResponse.createTokenExchangeRequest()
+        Log.d("IntroViewModel", "Starting token exchange with:")
+        Log.d("IntroViewModel", "Client ID: ${KeycloakAuthConfig.CLIENT_ID}")
+        Log.d("IntroViewModel", "Token endpoint: ${KeycloakAuthConfig.TOKEN_ENDPOINT}")
 
-        _uiState.value = _uiState.value.copy(status = LoadStatus.Loading())
+        // Add client authentication with secret
+        val clientAuth = ClientSecretPost(KeycloakAuthConfig.CLIENT_SECRET)
 
-        authService?.performTokenRequest(tokenRequest) { tokenResponse, exception ->
+        authService?.performTokenRequest(
+            tokenRequest,
+            clientAuth  // This is the missing piece!
+        ) { tokenResponse, exception ->
             viewModelScope.launch {
                 try {
                     if (tokenResponse != null) {
+                        Log.d("IntroViewModel", "Token response received")
                         val accessToken = tokenResponse.accessToken
                         val refreshToken = tokenResponse.refreshToken
 
                         if (accessToken != null) {
-                            // Store both tokens
-                            authRepository.storeToken(accessToken)
+                            // Store tokens synchronously
+                            tokenProvider.saveToken(accessToken)
 
-                            // Also store refresh token - add this method to AuthRepository
-                            if (refreshToken != null) {
-                                tokenProvider.saveRefreshToken(refreshToken)
+                            // Verify token was stored
+                            val storedToken = tokenProvider.getToken()
+                            Log.d("IntroViewModel", "Token storage verified: ${storedToken != null}")
+
+                            if (tokenResponse.refreshToken != null) {
+                                tokenProvider.saveRefreshToken(refreshToken ?: "Not Available")
                             }
 
-                            // Token introspection with timeout
+                            // Token introspection
                             withTimeout(5000) {
                                 keycloakRepository.introspectToken(accessToken).fold(
                                     onSuccess = { userData ->
-                                        // Update both ViewModels
+                                        Log.d("IntroViewModel", "Token introspection successful")
                                         _uiState.value = _uiState.value.copy(
                                             isAuthenticated = true,
                                             accessToken = accessToken,
@@ -177,6 +199,7 @@ class IntroViewModel @Inject constructor(
                                         )
                                     },
                                     onFailure = { error ->
+                                        Log.e("IntroViewModel", "Token introspection failed: ${error.message}")
                                         _uiState.value = _uiState.value.copy(
                                             status = LoadStatus.Error("Token validation failed: ${error.message}")
                                         )
@@ -184,21 +207,19 @@ class IntroViewModel @Inject constructor(
                                     }
                                 )
                             }
-                        } else {
-                            _uiState.value = _uiState.value.copy(
-                                status = LoadStatus.Error("No access token received")
-                            )
                         }
                     } else if (exception != null) {
+                        Log.e("IntroViewModel", "Token exchange failed: ${exception.message}")
+                        Log.e("IntroViewModel", "Error details: ${exception.error}, ${exception.errorDescription}")
                         _uiState.value = _uiState.value.copy(
-                            status = LoadStatus.Error("Token exchange failed: ${exception.message}")
+                            status = LoadStatus.Error("Token exchange failed: ${exception.errorDescription}")
                         )
                     }
                 } catch (e: Exception) {
+                    Log.e("IntroViewModel", "Exchange error: ${e.message}")
                     _uiState.value = _uiState.value.copy(
                         status = LoadStatus.Error("Authentication error: ${e.message}")
                     )
-                    tokenProvider.clearTokens()
                 }
             }
         }

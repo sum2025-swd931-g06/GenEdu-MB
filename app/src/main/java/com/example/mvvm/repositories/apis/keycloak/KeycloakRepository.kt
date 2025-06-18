@@ -9,6 +9,29 @@ class KeycloakRepository @Inject constructor(
     private val keycloakApi: KeycloakApi,
     private val tokenProvider: SharedPreferencesTokenProvider
 ) {
+
+    suspend fun getUserInfo(accessToken: String): Result<UserData> {
+        return try {
+            val response = keycloakApi.getUserInfo("Bearer $accessToken")
+
+            if (!response.isSuccessful) {
+                return Result.failure(Exception("Error: ${response.code()} ${response.message()}"))
+            }
+
+            val userInfo = response.body()
+                ?: return Result.failure(Exception("Empty response body"))
+
+            Result.success(UserData(
+                id = userInfo.sub,
+                name = userInfo.name ?: userInfo.preferred_username ?: "",
+                email = userInfo.email ?: "",
+                idNumber = "" // Set from custom attributes if available
+            ))
+        } catch (e: Exception) {
+            Result.failure(Exception("Failed to get user info: ${e.message}", e))
+        }
+    }
+
     suspend fun introspectToken(token: String): Result<UserData> {
         return try {
             val response = keycloakApi.introspectToken(
