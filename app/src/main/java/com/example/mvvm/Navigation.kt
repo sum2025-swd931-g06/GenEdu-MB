@@ -51,16 +51,16 @@ fun Navigation(
     val accountViewModel = hiltViewModel<ProfileViewModel>()
 
         // For login/auth screens without bottom nav
-        NavHost(navController = navController, startDestination = Screen.Intro.route) {
-            composable(Screen.Intro.route) {
-                IntroScreen(
-                    navController = navController,
-                    viewModel = hiltViewModel(),
-                    mainViewModel = mainViewModel,
-                    authResultLauncher = authResultLauncher,
-                    setAuthResultCallback = setAuthResultCallback
-                )
-            }
+    NavHost(navController = navController, startDestination = Screen.Intro.route) {
+        composable(Screen.Intro.route) {
+            IntroScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                mainViewModel = mainViewModel,
+                authResultLauncher = authResultLauncher,
+                setAuthResultCallback = setAuthResultCallback
+            )
+        }
 
             composable(Screen.Home.route){
                 HomeScreen(
