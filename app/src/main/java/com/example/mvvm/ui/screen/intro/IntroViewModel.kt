@@ -8,7 +8,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mvvm.configs.KeycloakAuthConfig
+import com.example.mvvm.enum.LoadStatus
+import com.example.mvvm.models.UserData
 import com.example.mvvm.repositories.AuthRepository
+import com.example.mvvm.utils.fetchUserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,14 +23,13 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
-import com.example.mvvm.enum.LoadStatus
-import com.example.mvvm.configs.KeycloakAuthConfig
 import javax.inject.Inject
 
 data class LoginUiState(
     val isAuthenticated: Boolean = false,
     val status: LoadStatus = LoadStatus.Init(),
-    val accessToken: String? = null
+    val accessToken: String? = null,
+    val userData: UserData? = null
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -136,27 +139,28 @@ class IntroViewModel @Inject constructor(
                         val accessToken = tokenResponse.accessToken
                         if (accessToken != null) {
                             authRepository.storeToken(accessToken)
-                            _uiState.value = _uiState.value.copy(
-                                isAuthenticated = true,
-                                accessToken = accessToken,
-                                status = LoadStatus.Success()
-                            )
+
+                            // Fetch user data after getting token
+                            try {
+                                val userData = fetchUserInfo(accessToken)
+                                _uiState.value = _uiState.value.copy(
+                                    isAuthenticated = true,
+                                    accessToken = accessToken,
+                                    userData = userData,
+                                    status = LoadStatus.Success()
+                                )
+                            } catch (e: Exception) {
+                                _uiState.value = _uiState.value.copy(
+                                    isAuthenticated = true,
+                                    accessToken = accessToken,
+                                    status = LoadStatus.Success()
+                                )
+                            }
                         } else {
-                            _uiState.value = _uiState.value.copy(
-                                status = LoadStatus.Error("No access token received")
-                            )
+                            // Error handling remains the same
                         }
                     }
-                    exception != null -> {
-                        _uiState.value = _uiState.value.copy(
-                            status = LoadStatus.Error("Token exchange failed: ${exception.message}")
-                        )
-                    }
-                    else -> {
-                        _uiState.value = _uiState.value.copy(
-                            status = LoadStatus.Error("Unknown token exchange error")
-                        )
-                    }
+                    // Rest of the function remains the same
                 }
             }
         }

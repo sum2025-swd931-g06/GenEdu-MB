@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -45,6 +47,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.mvvm.Screen
 import com.example.mvvm.models.AudioProject
 import com.example.mvvm.models.AudioProjectStatus
 import com.example.mvvm.models.Project
@@ -57,6 +62,8 @@ import com.example.mvvm.ui.theme.DarkPurple
 import com.example.mvvm.ui.theme.LightPurple
 import com.example.mvvm.ui.theme.MainColor
 import com.example.mvvm.utils.formatDuration
+import com.example.mvvm.utils.navigateTo
+import com.example.mvvm.utils.navigateToHome
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.regular.Calendar
@@ -264,10 +271,12 @@ fun ProjectItem(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProjectScreen(
+    navController: NavController,
     onBackClick: () -> Unit = {},
-    onProjectClick: (Project) -> Unit = {},
+    onProjectClick: (Project) -> Unit = { projects ->
+        navigateTo(navController, Screen.ProjectDetail.createRoute(projects.id))
+    },
     onAudioProjectClick: (AudioProject) -> Unit = {},
-    onCreateNewProject: () -> Unit = {}
 ) {
     var selectedMode by remember { mutableStateOf(ViewMode.PROJECTS) }
 
@@ -328,9 +337,11 @@ fun ProjectScreen(
 
     val audioProjects = projects.mapNotNull { it.audioProject }
 
+
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
@@ -342,9 +353,6 @@ fun ProjectScreen(
             )
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Status bar spacer
-            Spacer(modifier = Modifier.height(5.dp))
-
             // Header
             Row(
                 modifier = Modifier
@@ -355,6 +363,9 @@ fun ProjectScreen(
             ) {
                 IconButton(onClick = onBackClick) {
                     Icon(
+                        modifier = Modifier.clickable {
+                            navigateToHome(navController)
+                        },
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White
@@ -418,10 +429,11 @@ fun ProjectScreen(
                                     items(projects) { project ->
                                         ProjectItem(
                                             project = project,
-                                            onClick = onProjectClick
+                                            onClick = { onProjectClick(it) }
                                         )
                                     }
                                 }
+
                                 ViewMode.AUDIO -> {
                                     items(audioProjects) { audioProject ->
                                         AudioProjectItem(
@@ -437,6 +449,7 @@ fun ProjectScreen(
             }
         }
     }
+
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -452,6 +465,6 @@ private fun formatDate(timestamp: Long): String {
 @Composable
 fun ProjectScreenPreview() {
     MaterialTheme {
-        ProjectScreen()
+        ProjectScreen(rememberNavController())
     }
 }

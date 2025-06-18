@@ -6,19 +6,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.mvvm.ui.navigation.BottomNavHost
+import com.example.mvvm.ui.screen.account.AccountScreen
 import com.example.mvvm.ui.screen.home.HomeScreen
 import com.example.mvvm.ui.screen.home.HomeViewModel
 import com.example.mvvm.ui.screen.intro.IntroScreen
+import com.example.mvvm.ui.screen.project.ProjectScreen
+import com.example.mvvm.ui.screen.projectdetail.ProjectDetailScreen
 
 sealed class Screen(val route: String) {
     object Intro : Screen("intro")
     object Home : Screen("home")
-    object Detail : Screen("detail")
-    object AddOrEdit : Screen("addOrEdit")
+    object Project: Screen("project")
+    object ProjectDetail: Screen("projectDetail/{projectId}") {
+        fun createRoute(projectId: String): String = "projectDetail/$projectId"
+    }
+    object UserProfile: Screen("userProfile")
 }
 
 //https://developer.android.com/topic/architecture
@@ -37,27 +45,8 @@ fun Navigation(
     val mainState = mainViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // For screens that should include the bottom nav
-    if (mainState.value.isAuthenticated) {
-        BottomNavHost(navController = navController) { padding ->
-            NavHost(
-                navController = navController,
-                startDestination = Screen.Intro.route,
-//                modifier = Modifier.padding(padding = padding)
-            ) {
-                composable(Screen.Home.route) {
-                    val homeViewModel: HomeViewModel = hiltViewModel()
-                    HomeScreen(
-                        navController,
-                        homeViewModel
-                    )
-                }
-                // Add other screens
-            }
-        }
-    } else {
         // For login/auth screens without bottom nav
-        NavHost(navController = navController, startDestination = Screen.Intro.route) {
+        NavHost(navController = navController, startDestination = Screen.Home.route) {
             composable(Screen.Intro.route) {
                 IntroScreen(
                     navController = navController,
@@ -68,7 +57,42 @@ fun Navigation(
                 )
             }
 
+            composable(Screen.Home.route){
+                HomeScreen(
+                    navController = navController,
+                    viewModel = hiltViewModel<HomeViewModel>(),
+                    mainViewModel = mainViewModel
+                )
+            }
+
+            composable(Screen.Project.route){
+                ProjectScreen(
+                    navController = navController
+                )
+            }
+
+            composable(
+                route = Screen.ProjectDetail.route,
+                arguments = listOf(
+                    navArgument("projectId") {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    }
+                )
+            ) { backStackEntry ->
+                val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+                ProjectDetailScreen(
+                    navController = navController,
+                    projectId = projectId
+                )
+            }
+
+            composable(Screen.UserProfile.route){
+                AccountScreen(
+                    navController = navController,
+                    mainViewModel = mainViewModel,
+                )
+            }
 
         }
-    }
 }

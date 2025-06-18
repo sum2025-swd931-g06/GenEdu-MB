@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -23,159 +24,63 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mvvm.ui.theme.DangerColor
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.mvvm.MainViewModel
+import com.example.mvvm.Screen
+import com.example.mvvm.ui.components.menuitems.MenuItem
+import com.example.mvvm.ui.components.menuitems.MenuItemRow
 import com.example.mvvm.ui.theme.DarkPurple
 import com.example.mvvm.ui.theme.LightPurple
 import com.example.mvvm.ui.theme.MainColor
+import com.example.mvvm.utils.navigateTo
+import com.example.mvvm.utils.navigateToHome
 import androidx.compose.material3.Divider as HorizontalDivider
-
-data class MenuItem(
-    val icon: ImageVector,
-    val title: String,
-    val hasArrow: Boolean = true,
-    val isDestructive: Boolean = false
-)
-
-@Composable
-fun MenuItemRow(
-    item: MenuItem,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .clickable() { onClick() }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Icon Background
-        Surface(
-            modifier = Modifier.size(48.dp),
-            shape = CircleShape,
-            color = if (item.isDestructive)
-                Color(0xFFFFEBEE)
-            else
-                Color(0xFFE3F2FD)
-        ) {
-            Box(
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = null,
-                    tint = if (item.isDestructive)
-                        DangerColor
-                    else
-                        MainColor,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // Title
-        Text(
-            text = item.title,
-            color = if (item.isDestructive)
-                DangerColor
-            else
-                Color(0xFF424242),
-            fontSize = 16.sp,
-            modifier = Modifier.weight(1f)
-        )
-
-        // Arrow
-        if (item.hasArrow) {
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
-                contentDescription = "Navigate",
-                tint = Color(0xFF9E9E9E),
-                modifier = Modifier.size(20.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun LogoutButton(
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = DangerColor, // Red color for warning/destructive action
-            contentColor = Color.White
-        ),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(8.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.ExitToApp,
-                contentDescription = "Logout",
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Đăng xuất",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
-    }
-}
 
 @Composable
 fun AccountScreen(
+    navController: NavHostController,
+    mainViewModel: MainViewModel,
     onBackClick: () -> Unit = {},
     onMenuItemClick: (MenuItem) -> Unit = {}
 ) {
+
+    val userData = mainViewModel.userData.collectAsState().value
+
     // Placeholder for the Account screen content
     // This will be implemented later
     // You can use MenuItem data class to create menu items for the account screen
     val menuItem = listOf(
         MenuItem(
             icon = Icons.Default.Person,
-            title = "Họ tên: Nguyen Van Anh Tú",
+            title = "Họ tên: ${userData?.name ?: "Chưa cập nhật"}",
             hasArrow = false
         ),
         MenuItem(
             icon = Icons.Default.Email,
-            title = "Email: anhtu113kx@gmail.com",
+            title = "Email: ${userData?.email ?: "Chưa cập nhật"}",
             hasArrow = false
         ),
         MenuItem(
             icon = Icons.Default.AccountBox,
-            title = "Số CCCD/Căn Cước: Chưa cập nhật",
+            title = "Số CCCD/Căn Cước: ${userData?.idNumber ?: "Chưa cập nhật"}",
             hasArrow = true
         ),
         MenuItem(
@@ -193,7 +98,8 @@ fun AccountScreen(
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
+            .statusBarsPadding() // Built-in Compose padding
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
@@ -203,14 +109,11 @@ fun AccountScreen(
                     )
                 )
             )
-    )
-    {
+    ) {
         // Here you can use the menuItem list to create your account screen UI
         // For example, you can use LazyColumn to display the menu items
         // and handle onClick events for each item
         Column(modifier = Modifier.fillMaxSize()) {
-            // status bar spacer
-            Spacer(modifier = Modifier.height(24.dp))
             //header
             Row(
                 modifier = Modifier
@@ -222,6 +125,9 @@ fun AccountScreen(
                 IconButton(onClick = onBackClick)
                 {
                     Icon(
+                        modifier = Modifier.clickable {
+                            navigateToHome(navController)
+                        },
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White
@@ -271,7 +177,7 @@ fun AccountScreen(
 
                 //Name
                 Text(
-                    text = "Anh Tú",
+                    text = userData?.name ?: "Guest",
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
@@ -314,7 +220,7 @@ fun AccountScreen(
                             hasArrow = false,
                             isDestructive = false
                         ),
-                        onClick = { /* Handle logout */ }
+                        onClick = { navigateTo(navController, Screen.Intro.route) }
                     )
 
                     Spacer(modifier = Modifier.height(50.dp))
@@ -332,7 +238,10 @@ fun AccountScreen(
 @Composable
 fun AccountInfoScreenPreview() {
     MaterialTheme {
-        AccountScreen()
+        AccountScreen(
+            navController = rememberNavController(),
+            mainViewModel = MainViewModel()
+        )
     }
 }
 

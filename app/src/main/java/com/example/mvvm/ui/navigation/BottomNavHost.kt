@@ -63,7 +63,7 @@ fun BottomNavHost(
 }
 
 sealed class BottomNavItem(val route: String, val title: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    object Home : BottomNavItem(Screen.HomeMetro.route, "Home", Icons.Default.Home)
+    object Home : BottomNavItem(Screen.Home.route, "Home", Icons.Default.Home)
     object Projects : BottomNavItem("projects", "Projects", Icons.Default.List)
     object Account : BottomNavItem("account", "Account", Icons.Default.AccountCircle)
 }

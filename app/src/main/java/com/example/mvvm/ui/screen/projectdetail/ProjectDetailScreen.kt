@@ -3,6 +3,7 @@ package com.example.mvvm.ui.screen.projectdetail
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -24,11 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.mvvm.models.AudioProject
 import com.example.mvvm.models.AudioProjectStatus
 import com.example.mvvm.models.Project
@@ -37,6 +42,8 @@ import com.example.mvvm.ui.components.chips.ProjectStatusChip
 import com.example.mvvm.ui.theme.DarkPurple
 import com.example.mvvm.ui.theme.LightPurple
 import com.example.mvvm.ui.theme.MainColor
+import com.example.mvvm.utils.findProjectById
+import com.example.mvvm.utils.navigateToHome
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.regular.Calendar
@@ -48,24 +55,8 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProjectDetailScreen(
-    project: Project = Project(
-        id = "1",
-        title = "Bài giảng Sinh học lớp 10",
-        status = ProjectStatus.COMPLETED,
-        creationTime = System.currentTimeMillis() - 86400000 * 2,
-        slideNum = 24,
-        audioProject = AudioProject(
-            id = "1",
-            title = "Bài văn Tiếng Việt lớp 10",
-            status = AudioProjectStatus.COMPLETED,
-            creationTime = System.currentTimeMillis() - 86400000 * 2,
-            durationSeconds = 187,
-            textContent = "Việt Nam là một quốc gia nằm ở khu vực Đông Nam Á. Việt Nam có nhiều danh lam thắng cảnh và nhiều di sản văn hóa thế giới được UNESCO công nhận.",
-            audioUrl = "https://example.com/audio/123456.mp3",
-            voiceType = "Nữ miền Bắc"
-        )
-    ),
-
+    projectId: String = "",
+    navController: NavHostController,
     onBackClick: () -> Unit = {},
     onShareClick: (Project) -> Unit = {},
     onPlayAudio: (String) -> Unit = {}
@@ -74,9 +65,33 @@ fun ProjectDetailScreen(
     var isPlaying by remember { mutableStateOf(false) }
     var currentPosition by remember { mutableStateOf(0) }
 
+    val project = if (projectId.isNotEmpty()) {
+        findProjectById(projectId)
+    } else {
+        Project(
+            id = "1",
+            title = "Bài giảng Sinh học lớp 10",
+            status = ProjectStatus.COMPLETED,
+            creationTime = System.currentTimeMillis() - 86400000 * 2,
+            slideNum = 24,
+            audioProject = AudioProject(
+                id = "1",
+                title = "Bài văn Tiếng Việt lớp 10",
+                status = AudioProjectStatus.COMPLETED,
+                creationTime = System.currentTimeMillis() - 86400000 * 2,
+                durationSeconds = 187,
+                textContent = "Việt Nam là một quốc gia nằm ở khu vực Đông Nam Á. Việt Nam có nhiều danh lam thắng cảnh và nhiều di sản văn hóa thế giới được UNESCO công nhận.",
+                audioUrl = "https://example.com/audio/123456.mp3",
+                voiceType = "Nữ miền Bắc"
+            )
+        )
+    }
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
@@ -88,9 +103,6 @@ fun ProjectDetailScreen(
             )
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Status bar spacer
-            Spacer(modifier = Modifier.height(24.dp))
-
             // Header
             Row(
                 modifier = Modifier
@@ -101,6 +113,9 @@ fun ProjectDetailScreen(
             ) {
                 IconButton(onClick = onBackClick) {
                     Icon(
+                        modifier = Modifier.clickable {
+                            navigateToHome(navController)
+                        },
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White
@@ -403,17 +418,23 @@ fun ProjectDetailScreen(
 
                                 StatItem("Tổng số slides", project.slideNum.toString())
                                 StatItem("Trạng thái", project.status.name.replace("_", " "))
-                                project.audioProject?.let { formatDuration(it.durationSeconds) }?.let {
-                                    StatItem("Thời lượng",
-                                        it
-                                    )
-                                }
+                                project.audioProject?.let { formatDuration(it.durationSeconds) }
+                                    ?.let {
+                                        StatItem(
+                                            "Thời lượng",
+                                            it
+                                        )
+                                    }
                                 project.audioProject?.voiceType?.let {
-                                    StatItem("Loại giọng đọc",
+                                    StatItem(
+                                        "Loại giọng đọc",
                                         it
                                     )
                                 }
-                                StatItem("Ngày chỉnh sửa cuối", formatDate(project.creationTime))
+                                StatItem(
+                                    "Ngày chỉnh sửa cuối",
+                                    formatDate(project.creationTime)
+                                )
                                 StatItem("ID dự án", project.id)
                             }
                         }
@@ -422,6 +443,7 @@ fun ProjectDetailScreen(
             }
         }
     }
+
 }
 
 @Composable
@@ -516,6 +538,6 @@ private fun formatDate(timestamp: Long): String {
 @Composable
 fun ProjectDetailScreenPreview() {
     MaterialTheme {
-        ProjectDetailScreen()
+        ProjectDetailScreen(navController = rememberNavController())
     }
 }
