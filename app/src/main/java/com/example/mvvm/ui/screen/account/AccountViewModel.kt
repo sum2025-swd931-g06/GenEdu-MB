@@ -2,6 +2,8 @@ package com.example.mvvm.ui.screen.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mvvm.repositories.SharedPreferencesTokenProvider
+import com.example.mvvm.repositories.apis.keycloak.KeycloakRepository
 import com.example.mvvm.repositories.apis.profile.ProfileRepository
 import com.example.mvvm.repositories.apis.profile.UserProfile
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +21,9 @@ sealed class ProfileUiState {
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val repository: ProfileRepository
+    private val repository: ProfileRepository,
+    private val keycloakRepository: KeycloakRepository,
+    private val tokenProvider: SharedPreferencesTokenProvider
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Loading)
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -41,5 +45,29 @@ class ProfileViewModel @Inject constructor(
 
     fun refresh() {
         fetchProfiles()
+    }
+
+    fun logout(onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val refreshToken = tokenProvider.getRefreshToken()
+
+            if (refreshToken.isNullOrEmpty()) {
+                // If we don't have a refresh token, just clear tokens and return success
+                tokenProvider.clearTokens()
+                onComplete(true)
+                return@launch
+            }
+
+            keycloakRepository.logout(refreshToken).fold(
+                onSuccess = {
+                    onComplete(true)
+                },
+                onFailure = { error ->
+                    // Even if the server-side logout fails, we still clear tokens locally
+                    tokenProvider.clearTokens()
+                    onComplete(true)
+                }
+            )
+        }
     }
 }

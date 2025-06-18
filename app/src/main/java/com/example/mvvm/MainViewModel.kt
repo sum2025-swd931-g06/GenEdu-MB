@@ -27,7 +27,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         _uiState.value = _uiState.value.copy(isAuthenticated = isAuthenticated)
     }
 
-    fun setUserData(data: UserData) {
+    fun setUserData(data: UserData?) {
         _userData.value = data
     }
 }

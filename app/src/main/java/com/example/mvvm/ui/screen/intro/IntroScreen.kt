@@ -64,10 +64,15 @@ fun IntroScreen(
     // Handle authentication success
     LaunchedEffect(state.value.isAuthenticated, state.value.userData) {
         if (state.value.isAuthenticated) {
+            // Set authentication status
             mainViewModel.setAuthenticated(true)
+
+            // Pass user data to MainViewModel
             state.value.userData?.let { userData ->
                 mainViewModel.setUserData(userData)
             }
+
+            // Navigate to Home
             navController.navigate(Screen.Home.route) {
                 popUpTo(Screen.Intro.route) { inclusive = true }
             }

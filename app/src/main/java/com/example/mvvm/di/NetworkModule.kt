@@ -2,6 +2,8 @@ package com.example.mvvm.di
 
 import android.content.Context
 import com.example.mvvm.repositories.SharedPreferencesTokenProvider
+import com.example.mvvm.repositories.apis.keycloak.KeycloakApi
+import com.example.mvvm.repositories.apis.keycloak.KeycloakRepository
 import com.example.mvvm.repositories.apis.profile.ProfileApi
 import com.example.mvvm.repositories.apis.profile.ProfileRepository
 import com.example.mvvm.security.TokenProvider
@@ -80,6 +82,24 @@ class NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    // Keycloak
+    @Provides
+    @Singleton
+    fun provideKeycloakApi(okHttpClient: OkHttpClient): KeycloakApi {
+        return Retrofit.Builder()
+            .baseUrl("https://kc.lch.id.vn/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(KeycloakApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideKeycloakRepository(api: KeycloakApi): KeycloakRepository {
+        return KeycloakRepository(api)
     }
 
     //api station api

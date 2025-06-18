@@ -12,6 +12,7 @@ import com.example.mvvm.configs.KeycloakAuthConfig
 import com.example.mvvm.enum.LoadStatus
 import com.example.mvvm.models.UserData
 import com.example.mvvm.repositories.AuthRepository
+import com.example.mvvm.repositories.apis.keycloak.KeycloakRepository
 import com.example.mvvm.utils.fetchUserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,8 @@ data class LoginUiState(
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class IntroViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val keycloakRepository: KeycloakRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -140,9 +142,9 @@ class IntroViewModel @Inject constructor(
                         if (accessToken != null) {
                             authRepository.storeToken(accessToken)
 
-                            // Fetch user data after getting token
+                            // Fetch user data using token introspection
                             try {
-                                val userData = fetchUserInfo(accessToken)
+                                val userData = keycloakRepository.introspectToken(accessToken)
                                 _uiState.value = _uiState.value.copy(
                                     isAuthenticated = true,
                                     accessToken = accessToken,
@@ -153,14 +155,16 @@ class IntroViewModel @Inject constructor(
                                 _uiState.value = _uiState.value.copy(
                                     isAuthenticated = true,
                                     accessToken = accessToken,
-                                    status = LoadStatus.Success()
+                                    status = LoadStatus.Error("Failed to fetch user data: ${e.message}")
                                 )
                             }
                         } else {
-                            // Error handling remains the same
+                            _uiState.value = _uiState.value.copy(
+                                status = LoadStatus.Error("No access token received")
+                            )
                         }
                     }
-                    // Rest of the function remains the same
+                    // Existing error handling...
                 }
             }
         }

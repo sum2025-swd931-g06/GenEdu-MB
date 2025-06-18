@@ -8,4 +8,6 @@ object KeycloakAuthConfig {
     const val CLIENT_ID = "genedu-mb"
     const val REDIRECT_URI = "com.example.mvvm://callback"
     const val SCOPE = "openid profile email"
+    // Hard-coded client credentials - you might want to store these more securely
+    const val CLIENT_SECRET = "WNbul1BdiuWrveuazHyPwYmGyJkQ6tlB"
 }

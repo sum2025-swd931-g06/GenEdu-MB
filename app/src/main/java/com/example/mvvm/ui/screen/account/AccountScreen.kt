@@ -225,7 +225,18 @@ fun AccountScreen(
                             hasArrow = false,
                             isDestructive = false
                         ),
-                        onClick = { navigateTo(navController, Screen.Intro.route) }
+                        onClick = {
+                            accountViewModel.logout { success ->
+                                if (success) {
+                                    // Clear user data in MainViewModel
+                                    mainViewModel.setAuthenticated(false)
+                                    mainViewModel.setUserData(null)
+
+                                    // Navigate to intro screen
+                                    navigateTo(navController, Screen.Intro.route)
+                                }
+                            }
+                        }
                     )
 
                     Spacer(modifier = Modifier.height(50.dp))

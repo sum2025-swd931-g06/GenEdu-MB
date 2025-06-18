@@ -27,11 +27,36 @@ android {
     }
 
     buildTypes {
+
+        debug {
+            // Define credentials for debug builds
+            buildConfigField(
+                type = "String",
+                name = "KEYCLOAK_CLIENT_ID",
+                value = "genedu-mb"
+            )
+            buildConfigField(
+                type = "String",
+                name = "KEYCLOAK_CLIENT_SECRET",
+                value = "WNbul1BdiuWrveuazHyPwYmGyJkQ6tlB"
+            )
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
+            )
+            buildConfigField(
+                type = "String",
+                name = "KEYCLOAK_CLIENT_ID",
+                value = "genedu-mb"
+            )
+            buildConfigField(
+                type = "String",
+                name = "KEYCLOAK_CLIENT_SECRET",
+                value = "WNbul1BdiuWrveuazHyPwYmGyJkQ6tlB"
             )
         }
     }
@@ -44,6 +69,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {

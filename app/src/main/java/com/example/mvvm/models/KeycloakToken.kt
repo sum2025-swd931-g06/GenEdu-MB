@@ -1,6 +1,8 @@
 package com.example.mvvm.models
 
-data class TokenInfo(
+import com.google.gson.annotations.SerializedName
+
+data class TokenIntrospectionResponse(
     val exp: Long,
     val iat: Long,
     val jti: String,
@@ -11,19 +13,19 @@ data class TokenInfo(
     val azp: String,
     val sid: String,
     val acr: String,
-    val allowedOrigins: List<String>,
-    val realmAccess: RealmAccess,
-    val resourceAccess: ResourceAccess,
+    @SerializedName("allowed-origins") val allowedOrigins: List<String>,
+    @SerializedName("realm_access") val realmAccess: RealmAccess,
+    @SerializedName("resource_access") val resourceAccess: ResourceAccess,
     val scope: String,
-    val emailVerified: Boolean,
+    @SerializedName("email_verified") val emailVerified: Boolean,
     val name: String,
-    val preferredUsername: String,
-    val givenName: String,
-    val familyName: String,
+    @SerializedName("preferred_username") val preferredUsername: String,
+    @SerializedName("given_name") val givenName: String,
+    @SerializedName("family_name") val familyName: String,
     val email: String,
-    val clientId: String,
+    @SerializedName("client_id") val clientId: String,
     val username: String,
-    val tokenType: String,
+    @SerializedName("token_type") val tokenType: String,
     val active: Boolean
 )
 
