@@ -98,8 +98,11 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideKeycloakRepository(api: KeycloakApi): KeycloakRepository {
-        return KeycloakRepository(api)
+    fun provideKeycloakRepository(
+        api: KeycloakApi,
+        tokenProvider: SharedPreferencesTokenProvider
+    ): KeycloakRepository {
+        return KeycloakRepository(api, tokenProvider)
     }
 
     //api station api

@@ -148,7 +148,7 @@ class IntroViewModel @Inject constructor(
                                 _uiState.value = _uiState.value.copy(
                                     isAuthenticated = true,
                                     accessToken = accessToken,
-                                    userData = userData,
+                                    userData = userData.getOrNull(),
                                     status = LoadStatus.Success()
                                 )
                             } catch (e: Exception) {
