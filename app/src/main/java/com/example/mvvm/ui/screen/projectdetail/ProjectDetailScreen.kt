@@ -109,16 +109,16 @@ fun ProjectDetailScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onBackClick) {
+                IconButton(onClick = {
+                    navController.popBackStack() // <-- Quay lại màn trước đó
+                }) {
                     Icon(
-                        modifier = Modifier.clickable {
-                            navigateToHome(navController)
-                        },
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White
                     )
                 }
+
 
                 Text(
                     text = "Chi tiết dự án",
