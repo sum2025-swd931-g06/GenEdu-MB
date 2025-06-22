@@ -4,6 +4,8 @@ import android.content.Context
 import com.example.mvvm.repositories.SharedPreferencesTokenProvider
 import com.example.mvvm.repositories.apis.keycloak.KeycloakApi
 import com.example.mvvm.repositories.apis.keycloak.KeycloakRepository
+import com.example.mvvm.repositories.apis.project.ProjectApi
+import com.example.mvvm.repositories.apis.project.ProjectRepository
 import com.example.mvvm.security.TokenProvider
 import dagger.Module
 import dagger.Provides
@@ -81,7 +83,7 @@ class NetworkModule {
             .build()
     }
 
-    // Keycloak
+    // Keycloak 111
     @Provides
     @Singleton
     fun provideKeycloakApi(okHttpClient: OkHttpClient): KeycloakApi {
@@ -102,6 +104,24 @@ class NetworkModule {
         return KeycloakRepository(api, tokenProvider)
     }
 
-    //Trai oi mocky ong de duoi nay 3 endpoint khac nha, tao nhu tren (dong 85 -> 109)
+    @Provides
+    @Singleton
+    fun provideProjectApi(okHttpClient: OkHttpClient): ProjectApi {
+        return Retrofit.Builder()
+            .baseUrl("https://685656fd1789e182b37db664.mockapi.io/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ProjectApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProjectRepository(
+        api: ProjectApi,
+        tokenProvider: SharedPreferencesTokenProvider
+    ): ProjectRepository {
+        return ProjectRepository(api, tokenProvider)
+    }
 
 }

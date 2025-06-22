@@ -33,6 +33,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +49,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mvvm.Screen
@@ -272,6 +275,7 @@ fun ProjectItem(
 @Composable
 fun ProjectScreen(
     navController: NavController,
+    viewModel: ProjectViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
     onProjectClick: (Project) -> Unit = { projects ->
         navigateTo(navController, Screen.ProjectDetail.createRoute(projects.id))
@@ -280,60 +284,14 @@ fun ProjectScreen(
 ) {
     var selectedMode by remember { mutableStateOf(ViewMode.PROJECTS) }
 
-    // Sample projects for preview
-    val projects = listOf(
-        Project(
-            id = "1",
-            title = "Bài giảng Sinh học lớp 10",
-            status = ProjectStatus.COMPLETED,
-            creationTime = System.currentTimeMillis() - 86400000 * 2,
-            slideNum = 24,
-            audioProject = AudioProject(
-                id = "1",
-                title = "Bài văn Tiếng Việt lớp 10",
-                status = AudioProjectStatus.COMPLETED,
-                creationTime = System.currentTimeMillis() - 86400000 * 2,
-                durationSeconds = 187,
-                textContent = "Việt Nam là một quốc gia nằm ở khu vực Đông Nam Á. Việt Nam có nhiều danh lam thắng cảnh và nhiều di sản văn hóa thế giới được UNESCO công nhận.",
-                audioUrl = "https://example.com/audio/123456.mp3",
-                voiceType = "Nữ miền Bắc"
-            )
-        ),
-        Project(
-            id = "2",
-            title = "Hóa học cơ bản - Chương 3",
-            status = ProjectStatus.IN_PROGRESS,
-            creationTime = System.currentTimeMillis() - 86400000,
-            slideNum = 15,
-            audioProject = AudioProject(
-                id = "2",
-                title = "Hóa học cơ bản - Audio",
-                status = AudioProjectStatus.PROCESSING,
-                creationTime = System.currentTimeMillis() - 86400000,
-                durationSeconds = 142,
-                textContent = "Các phản ứng hóa học cơ bản và ứng dụng trong đời sống.",
-                audioUrl = "https://example.com/audio/234567.mp3",
-                voiceType = "Nam miền Nam"
-            )
-        ),
-        Project(
-            id = "3",
-            title = "Lịch sử Việt Nam thời kỳ đổi mới",
-            status = ProjectStatus.DRAFT,
-            creationTime = System.currentTimeMillis(),
-            slideNum = 8,
-            audioProject = AudioProject(
-                id = "3",
-                title = "Lịch sử Việt Nam - Đổi mới",
-                status = AudioProjectStatus.DRAFT,
-                creationTime = System.currentTimeMillis(),
-                durationSeconds = 0,
-                textContent = "Thời kỳ đổi mới của Việt Nam từ năm 1986 đến nay.",
-                audioUrl = "",
-                voiceType = "Nữ miền Trung"
-            )
-        )
-    )
+    val projects by viewModel.projects.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    // Gọi API khi Composable được khởi tạo lần đầu
+    LaunchedEffect(Unit) {
+        viewModel.fetchProjects()
+    }
 
     val audioProjects = projects.mapNotNull { it.audioProject }
 
