@@ -20,6 +20,7 @@ import com.example.mvvm.ui.screen.home.HomeScreen
 import com.example.mvvm.ui.screen.home.HomeViewModel
 import com.example.mvvm.ui.screen.intro.IntroScreen
 import com.example.mvvm.ui.screen.project.ProjectScreen
+import com.example.mvvm.ui.screen.project.ProjectViewModel
 import com.example.mvvm.ui.screen.projectdetail.ProjectDetailScreen
 
 sealed class Screen(val route: String) {
@@ -45,6 +46,7 @@ fun Navigation(
     setAuthResultCallback: ((Intent?) -> Unit) -> Unit = {}
 ) {
     val navController = rememberNavController()
+    val projectViewModel: ProjectViewModel = hiltViewModel()
     val mainViewModel: MainViewModel = hiltViewModel()
     val mainState = mainViewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -72,7 +74,8 @@ fun Navigation(
 
         composable(Screen.Project.route) {
             ProjectScreen(
-                navController = navController
+                navController = navController,
+                viewModel = projectViewModel // chia sẻ
             )
         }
 
@@ -86,9 +89,12 @@ fun Navigation(
             )
         ) { backStackEntry ->
             val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+            val projectViewModel = hiltViewModel<ProjectViewModel>()
+
             ProjectDetailScreen(
                 navController = navController,
-                projectId = projectId
+                projectId = projectId,
+                projectViewModel = projectViewModel
             )
         }
 

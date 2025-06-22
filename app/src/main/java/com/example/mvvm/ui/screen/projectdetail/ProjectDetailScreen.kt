@@ -16,6 +16,8 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +41,7 @@ import com.example.mvvm.models.AudioProjectStatus
 import com.example.mvvm.models.Project
 import com.example.mvvm.models.ProjectStatus
 import com.example.mvvm.ui.components.chips.ProjectStatusChip
+import com.example.mvvm.ui.screen.project.ProjectViewModel
 import com.example.mvvm.ui.theme.DarkPurple
 import com.example.mvvm.ui.theme.LightPurple
 import com.example.mvvm.ui.theme.MainColor
@@ -57,6 +60,7 @@ import java.time.format.DateTimeFormatter
 fun ProjectDetailScreen(
     projectId: String = "",
     navController: NavHostController,
+    projectViewModel: ProjectViewModel,
     onBackClick: () -> Unit = {},
     onShareClick: (Project) -> Unit = {},
     onPlayAudio: (String) -> Unit = {}
@@ -65,28 +69,22 @@ fun ProjectDetailScreen(
     var isPlaying by remember { mutableStateOf(false) }
     var currentPosition by remember { mutableStateOf(0) }
 
-    val project = if (projectId.isNotEmpty()) {
-        findProjectById(projectId)
-    } else {
-        Project(
-            id = "1",
-            title = "Bài giảng Sinh học lớp 10",
-            status = ProjectStatus.COMPLETED,
-            creationTime = System.currentTimeMillis() - 86400000 * 2,
-            slideNum = 24,
-            audioProject = AudioProject(
-                id = "1",
-                title = "Bài văn Tiếng Việt lớp 10",
-                status = AudioProjectStatus.COMPLETED,
-                creationTime = System.currentTimeMillis() - 86400000 * 2,
-                durationSeconds = 187,
-                textContent = "Việt Nam là một quốc gia nằm ở khu vực Đông Nam Á. Việt Nam có nhiều danh lam thắng cảnh và nhiều di sản văn hóa thế giới được UNESCO công nhận.",
-                audioUrl = "https://example.com/audio/123456.mp3",
-                voiceType = "Nữ miền Bắc"
-            )
-        )
+    val projects by projectViewModel.projects.collectAsState()
+
+    LaunchedEffect(projects) {
+        if (projects.isEmpty()) {
+            projectViewModel.fetchProjects()
+        }
     }
 
+    val project = projects.find { it.id == projectId }
+
+    if (project == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Color(0xFF884499))
+        }
+        return
+    }
 
     Box(
         modifier = Modifier
@@ -538,6 +536,13 @@ private fun formatDate(timestamp: Long): String {
 @Composable
 fun ProjectDetailScreenPreview() {
     MaterialTheme {
-        ProjectDetailScreen(navController = rememberNavController())
+        ProjectDetailScreen(
+            navController = rememberNavController(),
+            projectId = TODO(),
+            projectViewModel = TODO(),
+            onBackClick = TODO(),
+            onShareClick = TODO(),
+            onPlayAudio = TODO()
+        )
     }
 }

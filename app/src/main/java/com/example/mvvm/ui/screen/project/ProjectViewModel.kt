@@ -17,12 +17,12 @@ class ProjectViewModel @Inject constructor(
 
     private val _projects = MutableStateFlow<List<Project>>(emptyList())
     val projects: StateFlow<List<Project>> = _projects
-
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
-
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
+    private val _selectedProject = MutableStateFlow<Project?>(null)
+    val selectedProject: StateFlow<Project?> = _selectedProject
 
     fun fetchProjects() {
         viewModelScope.launch {
@@ -43,4 +43,24 @@ class ProjectViewModel @Inject constructor(
             }
         }
     }
+
+    fun fetchProjectById(projectId: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = projectRepository.getProjects() // vẫn trả về list
+                if (response.isSuccessful) {
+                    val list = response.body()
+                    _selectedProject.value = list?.find { it.id == projectId }
+                } else {
+                    _error.value = "Error: ${response.code()}"
+                }
+            } catch (e: Exception) {
+                _error.value = e.message
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
 }
