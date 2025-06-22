@@ -32,15 +32,19 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun ProjectCard(navController: NavHostController, project: Project) {
+fun ProjectCard(
+    navController: NavHostController,
+    project: Project,
+    onClick: () -> Unit = {}
+) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().clickable { onClick() }
     ) {
         Row(
             modifier = Modifier.padding(12.dp).clickable {
-                navigateTo(navController, Screen.ProjectDetail.route)
+                navigateTo(navController, Screen.ProjectDetail.createRoute(project.id))
             },
             verticalAlignment = Alignment.CenterVertically,
         ) {

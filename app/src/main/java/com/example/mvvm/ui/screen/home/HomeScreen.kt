@@ -54,11 +54,14 @@ fun HomeScreen(
     navController: NavHostController,
     viewModel: HomeViewModel,
     mainViewModel: MainViewModel,
-    projects: List<Project> = sampleProjects
+//    projects: List<Project> = sampleProjects
 ) {
 
     val userData = mainViewModel.userData.collectAsState().value
     val username = userData?.name ?: "Guest"
+    val uiState = viewModel.uiState.collectAsState().value
+    val projects = uiState.projects
+
 
     Column(
         modifier = Modifier
@@ -173,7 +176,16 @@ fun HomeScreen(
 
         // Project list
         projects.forEach { project ->
-            ProjectCard(navController, project)
+            ProjectCard(
+                navController = navController,
+                project = project,
+                onClick = {
+                    navigateTo(
+                        navController,
+                        Screen.ProjectDetail.createRoute(project.id)
+                    )
+                }
+            )
             Spacer(modifier = Modifier.height(12.dp))
         }
     }
@@ -188,7 +200,10 @@ fun HomeScreenPreview() {
     MaterialTheme {
         HomeScreen(
             navController,
-            viewModel = HomeViewModel(null, null), // Create a simple mock ViewModel
+            viewModel = HomeViewModel(
+                null, null,
+                repository = TODO()
+            ), // Create a simple mock ViewModel
             mainViewModel = mainViewModel
         )
     }
