@@ -89,9 +89,10 @@ fun AccountScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onBackClick) {
+                IconButton(onClick = {
+                    navigateToHome(navController)
+                }) {
                     Icon(
-                        modifier = Modifier.clickable { navigateToHome(navController) },
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White
@@ -170,9 +171,11 @@ fun AccountScreen(
                         is ProfileUiState.Loading -> {
                             Text("Đang tải thông tin...", color = Color.Gray)
                         }
+
                         is ProfileUiState.Error -> {
                             Text("Lỗi: ${profileUiState.message}", color = Color.Red)
                         }
+
                         is ProfileUiState.Success -> {
                             val profile = profileUiState.profile
                             val menuItems = listOf(

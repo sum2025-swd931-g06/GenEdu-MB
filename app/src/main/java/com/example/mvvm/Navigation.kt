@@ -18,6 +18,7 @@ import com.example.mvvm.ui.screen.account.ProfileViewModel
 import com.example.mvvm.ui.screen.home.HomeScreen
 import com.example.mvvm.ui.screen.home.HomeViewModel
 import com.example.mvvm.ui.screen.intro.IntroScreen
+import com.example.mvvm.ui.screen.notification.NotificationScreen
 import com.example.mvvm.ui.screen.project.ProjectScreen
 import com.example.mvvm.ui.screen.project.ProjectViewModel
 import com.example.mvvm.ui.screen.projectdetail.ProjectDetailScreen
@@ -26,6 +27,7 @@ sealed class Screen(val route: String) {
     object Intro : Screen("intro")
     object Home : Screen("home")
     object Project: Screen("project")
+    object Notification: Screen("notification")
     object ProjectDetail: Screen("projectDetail/{projectId}") {
         fun createRoute(projectId: String): String = "projectDetail/$projectId"
     }
@@ -76,6 +78,11 @@ fun Navigation(
             ProjectScreen(
                 navController = navController,
                 viewModel = projectViewModel // chia sẻ
+            )
+        }
+
+        composable(Screen.Notification.route){
+            NotificationScreen(
             )
         }
 

@@ -1,5 +1,6 @@
 [versions]
 accompanistPager = "0.36.0"
+accompanistPermissions = "0.31.1-alpha"
 agp = "8.9.0"
 animation = "1.6.7"
 appauth = "0.11.1"
@@ -8,6 +9,9 @@ coilCompose = "3.0.4"
 coilNetworkOkhttp = "3.0.4"
 converterGson = "2.9.0"
 coreSplashscreen = "1.0.1"
+firebaseAnalyticsKtx = "22.5.0"
+firebaseBom = "33.16.0"
+firebaseMessagingKtx = "24.1.2"
 gson = "2.11.0"
 hilt = "2.51.1"
 hiltNavigationCompose = "1.2.0"
@@ -32,6 +36,7 @@ composeIcons = "1.1.1"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-animation = { module = "androidx.compose.animation:animation", version.ref = "animation" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -56,6 +61,10 @@ appauth = { module = "net.openid:appauth", version.ref = "appauth" }
 
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
+google-firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx", version.ref = "firebaseAnalyticsKtx" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitExt" }

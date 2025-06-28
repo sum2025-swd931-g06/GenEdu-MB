@@ -9,6 +9,7 @@ import com.example.mvvm.repositories.apis.project.ProjectRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,7 +19,10 @@ import javax.inject.Inject
 
 data class HomeUiState(
     val test: String = "",
-    val projects: List<Project> = emptyList()
+    val projects: List<Project> = emptyList(),
+    val isLoading: Boolean = false,
+    val hasMore: Boolean = true,
+    val page: Int = 0
 )
 
 
@@ -54,5 +58,36 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    fun loadMoreProjects() {
+        if (uiState.value.isLoading || !uiState.value.hasMore) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
+            try {
+                val response = repository.getProjects() // chưa có page thì bạn cần thêm page nếu backend hỗ trợ
+                if (response.isSuccessful) {
+                    val newProjects = response.body() ?: emptyList()
+                    _uiState.update {
+                        it.copy(
+                            projects = it.projects + newProjects,
+                            isLoading = false,
+                            page = it.page + 1,
+                            hasMore = newProjects.isNotEmpty()
+                        )
+                    }
+                } else {
+                    log?.e("HomeViewModel", "API failed with code: ${response.code()}")
+                    _uiState.update { it.copy(isLoading = false) }
+                }
+            } catch (e: Exception) {
+                log?.e("HomeViewModel", "Failed to load more projects: ${e.message}")
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+
 
 }

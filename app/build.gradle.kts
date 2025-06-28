@@ -5,6 +5,7 @@ plugins {
     id("com.google.devtools.ksp")
     //id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -89,6 +90,16 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(libs.coil.network.okhttp)
+
+    // firebase
+    implementation(libs.firebase.bom)
+    // https://mvnrepository.com/artifact/com.google.firebase/firebase-analytics-ktx
+    implementation(libs.google.firebase.analytics.ktx)
+    // messaging
+    implementation(libs.firebase.messaging.ktx)
+
+    // notification permission
+    implementation(libs.accompanist.permissions)
 
     implementation(libs.appauth)
     implementation(libs.androidx.browser)

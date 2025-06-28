@@ -1,10 +1,6 @@
 package com.example.mvvm.ui.screen.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,9 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
@@ -43,24 +36,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mvvm.MainViewModel
-import com.example.mvvm.R
 import com.example.mvvm.Screen
-import com.example.mvvm.preview.EnhancedButton
-import com.example.mvvm.preview.EnhancedFeatureItem
-import com.example.mvvm.preview.EnhancedIconButton
-import com.example.mvvm.preview.EnhancedProjectCard
+import com.example.mvvm.ui.components.card.PremiumCard
+import com.example.mvvm.ui.components.feature.FeatureRow
+import com.example.mvvm.ui.components.header.HomeHeader
+import com.example.mvvm.ui.components.recentproject.RecentProject
+import com.example.mvvm.ui.components.text.HomeGreetingText
 import com.example.mvvm.ui.screen.account.ProfileViewModel
 import com.example.mvvm.utils.navigateTo
 import kotlinx.coroutines.launch
@@ -235,197 +224,26 @@ fun HomeScreen(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             // Enhanced Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                EnhancedIconButton(
-                    icon = Icons.Default.Menu,
-                    contentDescription = "Menu",
-                    onClick = { scope.launch { drawerState.open() } }
-                )
-                EnhancedIconButton(
-                    icon = Icons.Default.NotificationsActive,
-                    contentDescription = "notifications",
-                    onClick = { }
-                )
-            }
+            HomeHeader(scope, drawerState, navController)
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = "Hi $username 👋",
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    color = Color(0xFF64748B),
-                    fontWeight = FontWeight.Medium
-                )
-            )
-            Text(
-                text = "Manage your project",
-                style = TextStyle(
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF1E293B),
-                    shadow = Shadow(
-                        color = Color.Black.copy(alpha = 0.1f),
-                        offset = Offset(1f, 1f),
-                        blurRadius = 4f
-                    )
-                )
-            )
+            HomeGreetingText(username)
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Enhanced Premium Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 16.dp,
-                    pressedElevation = 20.dp
-                )
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color(0xFF8B5CF6),
-                                    Color(0xFFA855F7),
-                                    Color(0xFFEC4899)
-                                )
-                            )
-                        )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.earth_100),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(120.dp)
-                                .drawBehind {
-                                    drawCircle(
-                                        color = Color.White.copy(alpha = 0.2f),
-                                        radius = size.width / 2 + 8.dp.toPx()
-                                    )
-                                }
-                        )
-                        Spacer(modifier = Modifier.width(20.dp))
-                        Column {
-                            Text(
-                                text = "Unlimited Storage",
-                                fontSize = 16.sp,
-                                color = Color.White.copy(alpha = 0.9f),
-                                fontWeight = FontWeight.Medium
-                            )
-                            Text(
-                                text = "$30/year",
-                                fontSize = 32.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color.White,
-                                style = TextStyle(
-                                    shadow = Shadow(
-                                        color = Color.Black.copy(alpha = 0.3f),
-                                        offset = Offset(2f, 2f),
-                                        blurRadius = 4f
-                                    )
-                                )
-                            )
-                            Text(
-                                text = "Offer till May 26",
-                                fontSize = 14.sp,
-                                color = Color.White.copy(alpha = 0.8f)
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            EnhancedButton(
-                                text = "Upgrade Now",
-                                onClick = {}
-                            )
-                        }
-                    }
-                }
-            }
+            PremiumCard()
 
             Spacer(modifier = Modifier.height(24.dp))
 
             // Features row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                EnhancedFeatureItem(
-                    iconRes = R.drawable.presentation_100,
-                    label = "Project",
-                    color = Color(0xFF3B82F6),
-                    navigateTo = { navigateTo(navController, Screen.Project.route) }
-                )
-                EnhancedFeatureItem(
-                    iconRes = R.drawable.audio_100,
-                    label = "Audio",
-                    color = Color(0xFF10B981),
-                    navigateTo = { navigateTo(navController, Screen.Project.route) }
-                )
-                EnhancedFeatureItem(
-                    iconRes = R.drawable.profile_100,
-                    label = "Profile",
-                    color = Color(0xFFF59E0B),
-                    navigateTo = { navigateTo(navController, Screen.UserProfile.route) }
-                )
-            }
+            FeatureRow()
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Recents
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    "Recent Projects",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                        color = Color(0xFF1E293B)
-                    )
-                )
-                Text(
-                    "View all",
-                    style = TextStyle(
-                        color = Color(0xFF8B5CF6),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    modifier = Modifier.clickable {
-                        navigateTo(navController, Screen.Project.route)
-                    }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Project list
-            projects.forEach { project ->
-                EnhancedProjectCard(
-                    project = project,
-                    onClick = {
-                        navigateTo(
-                            navController,
-                            Screen.ProjectDetail.createRoute(project.id)
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            // Recent Projects
+            RecentProject(navController, projects)
         }
     }
 }
