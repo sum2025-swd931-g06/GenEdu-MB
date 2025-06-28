@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -56,7 +55,6 @@ import com.example.mvvm.Screen
 import com.example.mvvm.models.AudioProject
 import com.example.mvvm.models.AudioProjectStatus
 import com.example.mvvm.models.Project
-import com.example.mvvm.models.ProjectStatus
 import com.example.mvvm.ui.components.StorageIndicator
 import com.example.mvvm.ui.components.ViewToggle
 import com.example.mvvm.ui.components.chips.AudioProjectStatusChip

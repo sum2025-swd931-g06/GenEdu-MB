@@ -11,7 +11,6 @@ import org.json.JSONObject
 import java.util.Base64
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.text.split
 
 @Singleton
 class AuthRepository @Inject constructor(

@@ -13,7 +13,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mvvm.ui.navigation.BottomNavHost
 import com.example.mvvm.ui.screen.account.AccountScreen
 import com.example.mvvm.ui.screen.account.ProfileViewModel
 import com.example.mvvm.ui.screen.home.HomeScreen
@@ -53,7 +52,7 @@ fun Navigation(
     val accountViewModel = hiltViewModel<ProfileViewModel>()
 
     // For login/auth screens without bottom nav
-    NavHost(navController = navController, startDestination = Screen.Intro.route) {
+    NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(Screen.Intro.route) {
             IntroScreen(
                 navController = navController,
@@ -68,7 +67,8 @@ fun Navigation(
             HomeScreen(
                 navController = navController,
                 viewModel = hiltViewModel<HomeViewModel>(),
-                mainViewModel = mainViewModel
+                mainViewModel = mainViewModel,
+                profileViewModel = hiltViewModel<ProfileViewModel>()
             )
         }
 
