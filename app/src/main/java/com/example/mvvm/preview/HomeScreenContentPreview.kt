@@ -74,11 +74,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.mvvm.R
 import com.example.mvvm.Screen
+import com.example.mvvm.mock.sampleProjects
 import com.example.mvvm.models.AudioProject
 import com.example.mvvm.models.AudioProjectStatus
 import com.example.mvvm.models.Project
 import com.example.mvvm.models.ProjectStatus
 import com.example.mvvm.ui.components.cards.ProjectCard
+import com.example.mvvm.ui.components.feature.FeatureRow
 import com.example.mvvm.ui.components.featureitems.FeatureItem
 import kotlinx.coroutines.launch
 
@@ -390,29 +392,7 @@ fun HomeScreenPreviewContent(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // Enhanced Feature Items
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    EnhancedFeatureItem(
-                        iconRes = R.drawable.presentation_100,
-                        label = "Project",
-                        color = Color(0xFF3B82F6),
-                        navigateTo = { onNavigate(Screen.Project.route) }
-                    )
-                    EnhancedFeatureItem(
-                        iconRes = R.drawable.audio_100,
-                        label = "Audio",
-                        color = Color(0xFF10B981),
-                        navigateTo = { onNavigate(Screen.Project.route) }
-                    )
-                    EnhancedFeatureItem(
-                        iconRes = R.drawable.profile_100,
-                        label = "Profile",
-                        color = Color(0xFFF59E0B),
-                        navigateTo = { onNavigate(Screen.UserProfile.route) }
-                    )
-                }
+                FeatureRow(rememberNavController())
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -618,33 +598,7 @@ fun EnhancedProjectCard(
         animationSpec = tween(150)
     )
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .scale(scale)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            )
-            .drawBehind {
-                // Shadow effect
-                drawRoundRect(
-                    color = Color.Black.copy(alpha = 0.1f),
-                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(16.dp.toPx()),
-                    topLeft = Offset(4.dp.toPx(), 8.dp.toPx()),
-                    size = androidx.compose.ui.geometry.Size(
-                        size.width,
-                        size.height
-                    )
-                )
-            },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
-    ) {
+    Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         ProjectCard(
             navController = rememberNavController(),
             project = project,
@@ -708,4 +662,20 @@ fun HomeScreenPreview() {
         onNavigate = { println("Navigate to $it") },
         onLogout = { println("Logout clicked") }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProjectCardPreview() {
+    val navController = rememberNavController()
+    Column(modifier = Modifier.padding(16.dp)) {
+        ProjectCard(
+            navController = navController,
+            project = sampleProjects.first()
+        )
+        ProjectCard(
+            navController = navController,
+            project = sampleProjects[1]
+        )
+    }
 }

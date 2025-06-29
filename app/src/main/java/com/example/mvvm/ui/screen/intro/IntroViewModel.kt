@@ -11,11 +11,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mvvm.MainViewModel
 import com.example.mvvm.configs.KeycloakAuthConfig
+import com.example.mvvm.data.local.SharedPreferencesTokenProvider
 import com.example.mvvm.enum.LoadStatus
 import com.example.mvvm.models.UserData
 import com.example.mvvm.repositories.AuthRepository
-import com.example.mvvm.repositories.SharedPreferencesTokenProvider
 import com.example.mvvm.repositories.apis.keycloak.KeycloakRepository
+import com.example.mvvm.services.FcmTokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,6 +44,7 @@ class IntroViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val keycloakRepository: KeycloakRepository,
     private val tokenProvider: SharedPreferencesTokenProvider,
+    private val fcmTokenManager: FcmTokenManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -63,6 +65,9 @@ class IntroViewModel @Inject constructor(
     ) {
         mainViewModel.setUserData(userData)
         mainViewModel.setAuthenticated(isAuthenticated)
+        
+        // Register FCM token after successful authentication using email
+        fcmTokenManager.registerTokenWithUserIdAndDevice(userData.email)
     }
 
     private fun initializeAuthService() {
@@ -191,6 +196,10 @@ class IntroViewModel @Inject constructor(
                                 keycloakRepository.introspectToken(accessToken).fold(
                                     onSuccess = { userData ->
                                         Log.d("IntroViewModel", "Token introspection successful")
+                                        
+                                        // Store user email for FCM token registration
+                                        storeUserEmail(userData.email)
+                                        
                                         _uiState.value = _uiState.value.copy(
                                             isAuthenticated = true,
                                             accessToken = accessToken,
@@ -225,16 +234,19 @@ class IntroViewModel @Inject constructor(
         }
     }
 
-    fun resetStatus() {
-        _uiState.value = _uiState.value.copy(status = LoadStatus.Init())
+    private fun storeUserEmail(email: String) {
+        viewModelScope.launch {
+            try {
+                authRepository.storeUserEmail(email)
+                Log.d("IntroViewModel", "User email stored: $email")
+            } catch (e: Exception) {
+                Log.e("IntroViewModel", "Failed to store user email: ${e.message}")
+            }
+        }
     }
 
-    fun logout() {
-        viewModelScope.launch {
-            authRepository.clearToken()
-            _uiState.value = LoginUiState()
-            authService?.dispose()
-        }
+    fun resetStatus() {
+        _uiState.value = _uiState.value.copy(status = LoadStatus.Init())
     }
 
     override fun onCleared() {

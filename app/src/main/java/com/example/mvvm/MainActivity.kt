@@ -10,14 +10,19 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import com.example.mvvm.services.FcmTokenManager
 import com.example.mvvm.ui.theme.MVVMTheme
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private var authResultCallback: ((Intent?) -> Unit)? = null
+    
+    @Inject
+    lateinit var fcmTokenManager: FcmTokenManager
 
     private val authResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -40,9 +45,12 @@ class MainActivity : ComponentActivity() {
 
             // Log and toast
             Log.d("FCM", token.toString())
-            Toast.makeText(baseContext, token.toString(), Toast.LENGTH_SHORT).show()
+//            Toast.makeText(baseContext, token.toString(), Toast.LENGTH_SHORT).show()
+            
+            // Register token with backend when user is logged in
+            // Note: You should call fcmTokenManager.registerTokenWithUserIdAndDevice(userEmail) 
+            // after successful login in your authentication flow
         })
-
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

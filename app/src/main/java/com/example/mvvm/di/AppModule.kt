@@ -2,6 +2,7 @@ package com.example.mvvm.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.mvvm.utils.DeviceUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,5 +18,11 @@ class AppModule {
     @Singleton
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
         return context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideDeviceUtils(@ApplicationContext context: Context): DeviceUtils {
+        return DeviceUtils(context)
     }
 }

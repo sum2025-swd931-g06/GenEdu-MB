@@ -28,7 +28,10 @@ class AuthRepository @Inject constructor(
     }
 
     suspend fun clearToken() = withContext(Dispatchers.IO) {
-        sharedPrefs.edit().remove("access_token").apply()
+        sharedPrefs.edit()
+            .remove("access_token")
+            .remove("user_email")
+            .apply()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -44,6 +47,28 @@ class AuthRepository @Inject constructor(
             val currentTime = System.currentTimeMillis() / 1000
 
             exp > currentTime
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun storeUserEmail(email: String) = withContext(Dispatchers.IO) {
+        sharedPrefs.edit().putString("user_email", email).apply()
+    }
+
+    suspend fun getStoredUserEmail(): String? = withContext(Dispatchers.IO) {
+        sharedPrefs.getString("user_email", null)
+    }
+
+    suspend fun clearUserEmail() = withContext(Dispatchers.IO) {
+        sharedPrefs.edit().remove("user_email").apply()
+    }
+
+    suspend fun logout() = withContext(Dispatchers.IO) {
+        try {
+            clearToken()
+            clearUserEmail()
+            true
         } catch (e: Exception) {
             false
         }

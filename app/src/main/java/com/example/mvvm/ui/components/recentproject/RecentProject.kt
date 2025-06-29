@@ -25,8 +25,9 @@ import com.example.mvvm.utils.navigateTo
 @Composable
 fun RecentProject(
     navController: NavController = rememberNavController(),
-    projects: List<Project>
-){
+    projects: List<Project>,
+    isLoading: Boolean
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -55,7 +56,13 @@ fun RecentProject(
 
     Spacer(modifier = Modifier.height(16.dp))
 
-    // Project list
+    // ✅ Hiển thị loading
+    if (isLoading) {
+        androidx.compose.material3.CircularProgressIndicator()
+        return // không hiển thị list khi đang loading
+    }
+
+    // ✅ Hiển thị danh sách project
     projects.forEach { project ->
         EnhancedProjectCard(
             project = project,

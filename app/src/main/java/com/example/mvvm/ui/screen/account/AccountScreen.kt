@@ -1,5 +1,7 @@
 package com.example.mvvm.ui.screen.account
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +57,7 @@ import com.example.mvvm.utils.navigateTo
 import com.example.mvvm.utils.navigateToHome
 import androidx.compose.material3.Divider as HorizontalDivider
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AccountScreen(
     navController: NavHostController,
@@ -249,6 +252,7 @@ fun AccountScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun AccountInfoScreenPreview() {
@@ -256,7 +260,9 @@ fun AccountInfoScreenPreview() {
         AccountScreen(
             navController = rememberNavController(),
             accountViewModel = hiltViewModel<ProfileViewModel>(),
-            mainViewModel = MainViewModel()
+            mainViewModel = MainViewModel(
+                authRepository = TODO()
+            )
         )
     }
 }

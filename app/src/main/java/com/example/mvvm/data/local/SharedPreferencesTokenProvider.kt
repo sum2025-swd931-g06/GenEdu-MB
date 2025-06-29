@@ -1,4 +1,4 @@
-package com.example.mvvm.repositories
+package com.example.mvvm.data.local
 
 import android.content.SharedPreferences
 import android.util.Log

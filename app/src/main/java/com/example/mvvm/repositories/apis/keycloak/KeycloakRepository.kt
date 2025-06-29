@@ -2,7 +2,7 @@ package com.example.mvvm.repositories.apis.keycloak
 
 import com.example.mvvm.configs.KeycloakAuthConfig
 import com.example.mvvm.models.UserData
-import com.example.mvvm.repositories.SharedPreferencesTokenProvider
+import com.example.mvvm.data.local.SharedPreferencesTokenProvider
 import javax.inject.Inject
 
 class KeycloakRepository @Inject constructor(

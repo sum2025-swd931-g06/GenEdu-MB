@@ -22,6 +22,7 @@ import com.example.mvvm.ui.screen.notification.NotificationScreen
 import com.example.mvvm.ui.screen.project.ProjectScreen
 import com.example.mvvm.ui.screen.project.ProjectViewModel
 import com.example.mvvm.ui.screen.projectdetail.ProjectDetailScreen
+import androidx.compose.runtime.getValue
 
 sealed class Screen(val route: String) {
     object Intro : Screen("intro")
@@ -49,12 +50,18 @@ fun Navigation(
     val navController = rememberNavController()
     val projectViewModel: ProjectViewModel = hiltViewModel()
     val mainViewModel: MainViewModel = hiltViewModel()
-    val mainState = mainViewModel.uiState.collectAsState()
+    val mainState by mainViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val accountViewModel = hiltViewModel<ProfileViewModel>()
 
+    val startDestination = if (mainState.isAuthenticated) {
+        Screen.Home.route
+    } else {
+        Screen.Intro.route
+    }
+
     // For login/auth screens without bottom nav
-    NavHost(navController = navController, startDestination = Screen.Home.route) {
+    NavHost(navController = navController, startDestination = startDestination) {
         composable(Screen.Intro.route) {
             IntroScreen(
                 navController = navController,
@@ -83,6 +90,7 @@ fun Navigation(
 
         composable(Screen.Notification.route){
             NotificationScreen(
+                onBackClick = { navController.popBackStack() }
             )
         }
 

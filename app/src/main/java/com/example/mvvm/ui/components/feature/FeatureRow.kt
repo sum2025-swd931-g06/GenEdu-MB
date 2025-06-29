@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.mvvm.R
 import com.example.mvvm.Screen
 import com.example.mvvm.preview.EnhancedFeatureItem
@@ -17,7 +16,7 @@ import com.example.mvvm.utils.navigateTo
 
 @Composable
 fun FeatureRow(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController
 ){
     Row(
         modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp),

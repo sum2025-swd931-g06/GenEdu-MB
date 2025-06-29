@@ -2,9 +2,12 @@ package com.example.mvvm.ui.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mvvm.data.local.SharedPreferencesTokenProvider
 import com.example.mvvm.models.Project
+import com.example.mvvm.repositories.AuthRepository
 import com.example.mvvm.repositories.MainLog
 import com.example.mvvm.repositories.Store
+import com.example.mvvm.repositories.apis.keycloak.KeycloakRepository
 import com.example.mvvm.repositories.apis.project.ProjectRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +33,10 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     private val log: MainLog?,
     private val store: Store?,
-    private val repository: ProjectRepository // giả sử bạn có ProjectRepository
+    private val repository: ProjectRepository, // giả sử bạn có ProjectRepository
+    private val keycloakRepository: KeycloakRepository,
+    private val tokenProvider: SharedPreferencesTokenProvider,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -88,6 +94,28 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun logout(onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val refreshToken = tokenProvider.getRefreshToken()
 
+            if (refreshToken.isNullOrEmpty()) {
+                authRepository.logout()
+                onComplete(true)
+                return@launch
+            }
+
+            keycloakRepository.logout(refreshToken).fold(
+                onSuccess = {
+                    authRepository.logout()
+                    onComplete(true)
+                },
+                onFailure = { error ->
+                    // Even if the server-side logout fails, we still clear tokens locally
+                    authRepository.logout()
+                    onComplete(true)
+                }
+            )
+        }
+    }
 
 }

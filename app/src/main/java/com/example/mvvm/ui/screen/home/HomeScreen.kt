@@ -1,5 +1,7 @@
 package com.example.mvvm.ui.screen.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,6 +56,7 @@ import com.example.mvvm.ui.screen.account.ProfileViewModel
 import com.example.mvvm.utils.navigateTo
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
@@ -190,7 +193,7 @@ fun HomeScreen(
                         },
                         selected = false,
                         onClick = {
-                            profileViewModel.logout { success ->
+                            viewModel.logout { success ->
                                 if (success) {
                                     // Clear user data in MainViewModel
                                     mainViewModel.setAuthenticated(false)
@@ -200,7 +203,6 @@ fun HomeScreen(
                                     navigateTo(navController, Screen.Intro.route)
                                 }
                             }
-                            navigateTo(navController, Screen.Intro.route)
                             scope.launch { drawerState.close() }
                         },
                         modifier = Modifier
@@ -238,12 +240,12 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Features row
-            FeatureRow()
+            FeatureRow(navController)
 
             Spacer(modifier = Modifier.height(24.dp))
 
             // Recent Projects
-            RecentProject(navController, projects)
+            RecentProject(navController, projects, uiState.isLoading)
         }
     }
 }
