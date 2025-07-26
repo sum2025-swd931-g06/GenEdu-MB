@@ -18,7 +18,7 @@ class NotificationRepository @Inject constructor(
     // In a real app, you would get this from user session/preferences
     private val defaultUserEmail = "fallback@example.com"
     
-    suspend fun getNotificationsByEmail(email: String = defaultUserEmail): Result<List<NotificationItem>> {
+    private suspend fun getNotificationsByEmail(email: String = defaultUserEmail): Result<List<NotificationItem>> {
         return try {
             val token = tokenProvider.getToken()
             if (token == null) {
