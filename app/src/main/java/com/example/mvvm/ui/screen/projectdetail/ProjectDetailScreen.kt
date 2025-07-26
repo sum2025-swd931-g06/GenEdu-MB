@@ -1,6 +1,8 @@
 package com.example.mvvm.ui.screen.projectdetail
 
+import android.content.ContentValues.TAG
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -283,6 +285,8 @@ fun ProjectDetailScreen(
                                         .clip(RoundedCornerShape(16.dp))  // bo góc video
                                 )
                             }
+                        } else {
+                            Log.w(TAG, "Video URL is null, skipping video section.")
                         }
 
 

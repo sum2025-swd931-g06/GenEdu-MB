@@ -9,11 +9,10 @@ import retrofit2.Response
 
 class FinalizedLectureRepository(
     private val api: FinalizedLectureApi,
-    private val tokenProvider: SharedPreferencesTokenProvider
+    private val tokenProvider: TokenProvider
 ) {
     suspend fun getFinalizedLectures(projectId: String): Response<List<FinalizedLecture>> {
         val token = tokenProvider.getToken()
-        Log.d("FinalizedLectureRepo", "📦 Token from provider: ${token?.take(10) ?: "null"}")
 
         return if (token != null) {
             api.getFinalizedLectures(projectId, "Bearer $token")

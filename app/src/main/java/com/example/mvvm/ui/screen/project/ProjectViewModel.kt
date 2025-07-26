@@ -57,17 +57,14 @@ class ProjectViewModel @Inject constructor(
 //    }
 
     fun fetchFinalizedLectures(projectId: String) {
-
         viewModelScope.launch {
             try {
-//                val token = tokenProvider.getToken()
                 val response = finalizedLectureRepository.getFinalizedLectures(projectId)
 
                 if (response.isSuccessful) {
-                    response.body()?.let { list ->
-                        _lectures.value = list
-                        _videoUrl.value = list.firstOrNull()?.videoFileUrl
-                    }
+                    val list = response.body()
+                    _lectures.value = list ?: emptyList()
+                    _videoUrl.value = list?.firstOrNull { !it.videoFileUrl.isNullOrBlank() }?.videoFileUrl
                 } else {
                     val errorText = response.errorBody()?.string()
                     _videoUrl.value = null
