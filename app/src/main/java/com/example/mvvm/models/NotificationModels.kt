@@ -1,5 +1,7 @@
 package com.example.mvvm.models
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.Color
@@ -34,6 +36,7 @@ data class NotificationItem(
     val userId: String = "",
 ) {
     companion object {
+        @RequiresApi(Build.VERSION_CODES.O)
         fun fromBackendResponse(response: NotificationResponse): NotificationItem {
             return NotificationItem(
                 id = response.id,
@@ -48,6 +51,7 @@ data class NotificationItem(
             )
         }
 
+        @RequiresApi(Build.VERSION_CODES.O)
         private fun formatTimeFromBackend(timeString: String): String {
             return try {
                 // Handle various date formats from backend

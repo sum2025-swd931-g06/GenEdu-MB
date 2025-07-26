@@ -25,7 +25,7 @@ interface NotificationApi {
         @Header("Authorization") authorization: String
     ): Response<Void>
 
-    @POST("/api/v1/user-device-tokens")
+    @POST("/api/v1/notifications/user-device-tokens")
     suspend fun registerFcmToken(
         @Header("Authorization") authorization: String,
         @Body request: UserDeviceTokenRequest

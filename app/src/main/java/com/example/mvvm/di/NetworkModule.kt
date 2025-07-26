@@ -25,6 +25,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.CookieManager
 import java.net.CookiePolicy
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -33,9 +34,11 @@ class NetworkModule {
     private val BASE_URL = "http://10.0.2.2:8222/"
     private val BASE_NOTIFICATION_EMULATOR = "http://10.0.2.2:8095/"
     private val BASE_NOTIFICATION_DEVICE = "http://192.168.88.172:8095/"
+    private val PRODUCTION_URL = "https://genedu-gateway.lch.id.vn/"
 
     @Provides
     @Singleton
+    @Named("Auth")
     fun provideAuthInterceptor(tokenProvider: TokenProvider): Interceptor {
         return Interceptor { chain ->
             val original = chain.request()
@@ -68,7 +71,10 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(authInterceptor: Interceptor, cookieManager: CookieManager): OkHttpClient {
+    fun provideOkHttpClient(
+        @Named("Auth") authInterceptor: Interceptor,
+        cookieManager: CookieManager
+    ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .addInterceptor(HttpLoggingInterceptor().apply {
@@ -82,7 +88,7 @@ class NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(PRODUCTION_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -133,7 +139,7 @@ class NetworkModule {
     @Singleton
     fun provideNotificationApi(okHttpClient: OkHttpClient): NotificationApi {
         return Retrofit.Builder()
-            .baseUrl(BASE_NOTIFICATION_DEVICE)
+            .baseUrl(PRODUCTION_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
