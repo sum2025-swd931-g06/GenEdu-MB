@@ -5,6 +5,7 @@ import com.example.mvvm.utils.DeviceUtils
 object KeycloakAuthConfig {
     const val isDevMode = false
     val IS_USER_REAL_DEVICE = !DeviceUtils.isEmulator
+    const val KEYCLOAK_DEV_URL_FOR_EMULATOR = "http://10.0.2.2:9099/"
     const val KEYCLOAK_DEV_URL_FOR_REAL_DEVICE = "http://192.168.88.172:9099/"
     const val KEYCLOAK_PRODUCTION_URL = "https://kc.lch.id.vn/"
     const val REALM_NAME = "GenEdu"
@@ -16,8 +17,8 @@ object KeycloakAuthConfig {
     val KEYCLOAK_URL: String
         get() = when {
             !isDevMode -> KEYCLOAK_PRODUCTION_URL
-            IS_USER_REAL_DEVICE -> KEYCLOAK_PRODUCTION_URL
-            else -> KEYCLOAK_DEV_URL_FOR_REAL_DEVICE
+            IS_USER_REAL_DEVICE -> KEYCLOAK_DEV_URL_FOR_REAL_DEVICE
+            else -> KEYCLOAK_DEV_URL_FOR_EMULATOR
         }
 
     val AUTH_ENDPOINT: String
