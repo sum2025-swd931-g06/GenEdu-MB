@@ -615,7 +615,7 @@ fun HomeScreenPreview() {
             id = "2",
             title = "Hóa học cơ bản - Chương 3",
             status = ProjectStatus.IN_PROGRESS,
-            creationTime = System.currentTimeMillis() - 86400000,
+//            creationTime = System.currentTimeMillis() - 86400000,
             slideNum = 15,
             audioProject = AudioProject(
                 id = "2",
@@ -632,7 +632,7 @@ fun HomeScreenPreview() {
             id = "3",
             title = "Toán học nâng cao - Đại số",
             status = ProjectStatus.DRAFT,
-            creationTime = System.currentTimeMillis() - 86400000 * 3,
+//            creationTime = System.currentTimeMillis() - 86400000 * 3,
             slideNum = 30,
             audioProject = null
         ),
@@ -640,7 +640,7 @@ fun HomeScreenPreview() {
             id = "4",
             title = "Văn học dân gian",
             status = ProjectStatus.IN_PROGRESS,
-            creationTime = System.currentTimeMillis() - 86400000 * 4,
+//            creationTime = System.currentTimeMillis() - 86400000 * 4,
             slideNum = 12,
             audioProject = AudioProject(
                 id = "4",

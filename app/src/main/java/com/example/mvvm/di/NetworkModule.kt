@@ -30,7 +30,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
-    private val BASE_URL = "http://10.0.2.2:8222/"
+    private val BASE_URL = "https://genedu-gateway.lch.id.vn/api/v1/"
+//    private val BASE_URL = "http://10.0.2.2:8222/"
     private val BASE_NOTIFICATION_EMULATOR = "http://10.0.2.2:8095/"
     private val BASE_NOTIFICATION_DEVICE = "http://192.168.88.172:8095/"
 
@@ -109,11 +110,23 @@ class NetworkModule {
         return KeycloakRepository(api, tokenProvider)
     }
 
+    //...... 🐸
+//    @Provides
+//    @Singleton
+//    fun provideProjectApi(okHttpClient: OkHttpClient): ProjectApi {
+//        return Retrofit.Builder()
+//            .baseUrl("https://685656fd1789e182b37db664.mockapi.io/")
+//            .client(okHttpClient)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//            .create(ProjectApi::class.java)
+//    }
+
     @Provides
     @Singleton
     fun provideProjectApi(okHttpClient: OkHttpClient): ProjectApi {
         return Retrofit.Builder()
-            .baseUrl("https://685656fd1789e182b37db664.mockapi.io/")
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

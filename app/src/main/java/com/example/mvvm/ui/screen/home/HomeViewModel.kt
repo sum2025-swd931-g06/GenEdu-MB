@@ -33,7 +33,7 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     private val log: MainLog?,
     private val store: Store?,
-    private val repository: ProjectRepository, // giả sử bạn có ProjectRepository
+    private val repository: ProjectRepository,
     private val keycloakRepository: KeycloakRepository,
     private val tokenProvider: SharedPreferencesTokenProvider,
     private val authRepository: AuthRepository
@@ -51,8 +51,8 @@ class HomeViewModel @Inject constructor(
             try {
                 val response = repository.getProjects()
                 if (response.isSuccessful) {
-                    response.body()?.let { projectList ->
-                        _uiState.value = _uiState.value.copy(projects = projectList)
+                    response.body()?.let { projectResponse ->
+                        _uiState.value = _uiState.value.copy(projects = projectResponse.content)
                     } ?: run {
                         log?.e("HomeViewModel", "Response body is null")
                     }
@@ -74,7 +74,8 @@ class HomeViewModel @Inject constructor(
             try {
                 val response = repository.getProjects() // chưa có page thì bạn cần thêm page nếu backend hỗ trợ
                 if (response.isSuccessful) {
-                    val newProjects = response.body() ?: emptyList()
+                    val projectResponse = response.body()
+                    val newProjects = projectResponse?.content ?: emptyList()
                     _uiState.update {
                         it.copy(
                             projects = it.projects + newProjects,

@@ -69,6 +69,10 @@ import compose.icons.fontawesomeicons.regular.FileArchive
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import android.widget.MediaController
+import android.widget.VideoView
+import androidx.compose.ui.viewinterop.AndroidView
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -83,13 +87,15 @@ fun ProjectDetailScreen(
 
     var isPlaying by remember { mutableStateOf(false) }
     var currentPosition by remember { mutableIntStateOf(0) }
+    val videoUrl by projectViewModel.videoUrl.collectAsState()
 
     val projects by projectViewModel.projects.collectAsState()
 
-    LaunchedEffect(projects) {
-        if (projects.isEmpty()) {
+    LaunchedEffect(projectId) {
+        if (projectViewModel.projects.value.isEmpty()) {
             projectViewModel.fetchProjects()
         }
+        projectViewModel.fetchFinalizedLectures(projectId)
     }
 
     val project = projects.find { it.id == projectId }
@@ -125,7 +131,7 @@ fun ProjectDetailScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = {
-                    navController.popBackStack() // <-- Quay lại màn trước đó
+                    navController.popBackStack()
                 }) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
@@ -214,243 +220,258 @@ fun ProjectDetailScreen(
 
                                     Spacer(modifier = Modifier.width(12.dp))
 
-                                    Text(
-                                        text = "${project.slideNum} slides",
-                                        fontSize = 14.sp,
-                                        color = Color(0xFF757575)
-                                    )
+//                                    Text(
+//                                        text = "${project.slideNum} slides",
+//                                        fontSize = 14.sp,
+//                                        color = Color(0xFF757575)
+//                                    )
                                 }
 
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = FontAwesomeIcons.Regular.Calendar,
-                                        contentDescription = null,
-                                        tint = Color(0xFF9E9E9E),
-                                        modifier = Modifier.size(16.dp)
-                                    )
+//                                    Icon(
+//                                        imageVector = FontAwesomeIcons.Regular.Calendar,
+//                                        contentDescription = null,
+//                                        tint = Color(0xFF9E9E9E),
+//                                        modifier = Modifier.size(16.dp)
+//                                    )
 
                                     Spacer(modifier = Modifier.width(8.dp))
 
-                                    val formattedDate = formatDate(project.creationTime)
-                                    Text(
-                                        text = "Tạo ngày $formattedDate",
-                                        fontSize = 14.sp,
-                                        color = Color(0xFF9E9E9E)
-                                    )
+//                                    val formattedDate = formatDate(project.creationTime)
+//                                    Text(
+//                                        text = "Tạo ngày $formattedDate",
+//                                        fontSize = 14.sp,
+//                                        color = Color(0xFF9E9E9E)
+//                                    )
                                 }
                             }
                         }
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        // Project Details
-                        Text(
-                            text = "Slides",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF212121)
-                        )
+                        if (videoUrl != null) {
+                            Text(
+                                text = "Video:",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF212121),
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Slides list or preview
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                repeat(minOf(3, project.slideNum)) { index ->
-                                    SlidePreviewItem(
-                                        slideNumber = index + 1,
-                                        title = "Slide ${index + 1}"
-                                    )
-
-                                    if (index < minOf(2, project.slideNum - 1)) {
-                                        Divider(
-                                            modifier = Modifier.padding(vertical = 12.dp),
-                                            color = Color(0xFFEEEEEE)
-                                        )
-                                    }
-                                }
-
-                                if (project.slideNum > 3) {
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    Text(
-                                        text = "Xem tất cả ${project.slideNum} slides",
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 8.dp),
-                                        textAlign = TextAlign.Center,
-                                        color = Color(0xFF2196F3),
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        // Audio Player
-                        if (project.audioProject != null && project.audioProject.status == AudioProjectStatus.COMPLETED && project.audioProject.audioUrl != null) {
                             Card(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(220.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                                 colors = CardDefaults.cardColors(containerColor = Color.White)
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "Audio Player",
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF212121)
-                                    )
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    // Audio control buttons
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceEvenly,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        IconButton(onClick = { /* Rewind logic */ }) {
-                                            Icon(
-                                                imageVector = Icons.Default.ArrowBack,
-                                                contentDescription = "Rewind 10 seconds",
-                                                tint = Color(0xFF2196F3)
-                                            )
+                                AndroidView(
+                                    factory = { context ->
+                                        VideoView(context).apply {
+                                            setVideoURI(android.net.Uri.parse(videoUrl))
+                                            setMediaController(MediaController(context).also {
+                                                it.setAnchorView(this)
+                                            })
+                                            setOnPreparedListener { start() }
                                         }
-
-                                        FloatingActionButton(
-                                            onClick = {
-                                                isPlaying = !isPlaying
-                                                if (isPlaying) {
-                                                    onPlayAudio(project.audioProject.audioUrl)
-                                                }
-                                            },
-                                            containerColor = Color(0xFF2196F3),
-                                            contentColor = Color.White,
-                                            modifier = Modifier.size(56.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = if (isPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
-                                                contentDescription = if (isPlaying) "Pause" else "Play",
-                                                modifier = Modifier.size(32.dp)
-                                            )
-                                        }
-
-                                        IconButton(onClick = { /* Fast forward logic */ }) {
-                                            Icon(
-                                                imageVector = Icons.Default.Close,
-                                                contentDescription = "Forward 10 seconds",
-                                                tint = Color(0xFF2196F3)
-                                            )
-                                        }
-                                    }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    // Progress bar
-                                    Slider(
-                                        value = currentPosition.toFloat(),
-                                        onValueChange = { currentPosition = it.toInt() },
-                                        valueRange = 0f..project.audioProject.durationSeconds.toFloat(),
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-
-                                    // Time indicators
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(
-                                            text = formatDuration(currentPosition),
-                                            fontSize = 12.sp,
-                                            color = Color(0xFF757575)
-                                        )
-
-                                        Text(
-                                            text = formatDuration(project.audioProject.durationSeconds),
-                                            fontSize = 12.sp,
-                                            color = Color(0xFF757575)
-                                        )
-                                    }
-                                }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(RoundedCornerShape(16.dp))  // bo góc video
+                                )
                             }
-
-                            Spacer(modifier = Modifier.height(24.dp))
                         }
+
+
+//                        Spacer(modifier = Modifier.height(24.dp))
+//
+//                        AndroidView(
+//                            factory = { context ->
+//                                VideoView(context).apply {
+//                                    setVideoPath(project.videoUrl)
+//                                    val mediaController = MediaController(context)
+//                                    mediaController.setAnchorView(this)
+//                                    setMediaController(mediaController)
+//                                    requestFocus()
+//                                    start()
+//                                }
+//                            },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .height(200.dp)
+//                        )
+
+
+                        // Project Details
+//                        Text(
+//                            text = "Slides",
+//                            fontSize = 18.sp,
+//                            fontWeight = FontWeight.Bold,
+//                            color = Color(0xFF212121)
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Slides list or preview
+//                        Card(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            colors = CardDefaults.cardColors(containerColor = Color.White)
+//                        ) {
+//                            Column(modifier = Modifier.padding(16.dp)) {
+//                                repeat(minOf(3, project.slideNum)) { index ->
+//                                    SlidePreviewItem(
+//                                        slideNumber = index + 1,
+//                                        title = "Slide ${index + 1}"
+//                                    )
+//
+//                                    if (index < minOf(2, project.slideNum - 1)) {
+//                                        Divider(
+//                                            modifier = Modifier.padding(vertical = 12.dp),
+//                                            color = Color(0xFFEEEEEE)
+//                                        )
+//                                    }
+//                                }
+//
+//                                if (project.slideNum > 3) {
+//                                    Spacer(modifier = Modifier.height(12.dp))
+//
+//                                    Text(
+//                                        text = "Xem tất cả ${project.slideNum} slides",
+//                                        modifier = Modifier
+//                                            .fillMaxWidth()
+//                                            .padding(vertical = 8.dp),
+//                                        textAlign = TextAlign.Center,
+//                                        color = Color(0xFF2196F3),
+//                                        fontWeight = FontWeight.Medium
+//                                    )
+//                                }
+//                            }
+//                        }
+
+//                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Audio Player
+//                        if (project.audioProject != null && project.audioProject.status == AudioProjectStatus.COMPLETED && project.audioProject.audioUrl != null) {
+//                            Card(
+//                                modifier = Modifier.fillMaxWidth(),
+//                                colors = CardDefaults.cardColors(containerColor = Color.White)
+//                            ) {
+//                                Column(
+//                                    modifier = Modifier.padding(16.dp),
+//                                    horizontalAlignment = Alignment.CenterHorizontally
+//                                ) {
+//                                    Text(
+//                                        text = "Audio Player",
+//                                        fontSize = 18.sp,
+//                                        fontWeight = FontWeight.Bold,
+//                                        color = Color(0xFF212121)
+//                                    )
+//
+//                                    Spacer(modifier = Modifier.height(16.dp))
+//
+//                                    // Audio control buttons
+//                                    Row(
+//                                        modifier = Modifier.fillMaxWidth(),
+//                                        horizontalArrangement = Arrangement.SpaceEvenly,
+//                                        verticalAlignment = Alignment.CenterVertically
+//                                    ) {
+//                                        IconButton(onClick = { /* Rewind logic */ }) {
+//                                            Icon(
+//                                                imageVector = Icons.Default.ArrowBack,
+//                                                contentDescription = "Rewind 10 seconds",
+//                                                tint = Color(0xFF2196F3)
+//                                            )
+//                                        }
+//
+//                                        FloatingActionButton(
+//                                            onClick = {
+//                                                isPlaying = !isPlaying
+//                                                if (isPlaying) {
+//                                                    onPlayAudio(project.audioProject.audioUrl)
+//                                                }
+//                                            },
+//                                            containerColor = Color(0xFF2196F3),
+//                                            contentColor = Color.White,
+//                                            modifier = Modifier.size(56.dp)
+//                                        ) {
+//                                            Icon(
+//                                                imageVector = if (isPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
+//                                                contentDescription = if (isPlaying) "Pause" else "Play",
+//                                                modifier = Modifier.size(32.dp)
+//                                            )
+//                                        }
+//
+//                                        IconButton(onClick = { /* Fast forward logic */ }) {
+//                                            Icon(
+//                                                imageVector = Icons.Default.Close,
+//                                                contentDescription = "Forward 10 seconds",
+//                                                tint = Color(0xFF2196F3)
+//                                            )
+//                                        }
+//                                    }
+//
+//                                    Spacer(modifier = Modifier.height(16.dp))
+//
+//                                    // Progress bar
+//                                    Slider(
+//                                        value = currentPosition.toFloat(),
+//                                        onValueChange = { currentPosition = it.toInt() },
+//                                        valueRange = 0f..project.audioProject.durationSeconds.toFloat(),
+//                                        modifier = Modifier.fillMaxWidth()
+//                                    )
+//
+//                                    // Time indicators
+//                                    Row(
+//                                        modifier = Modifier.fillMaxWidth(),
+//                                        horizontalArrangement = Arrangement.SpaceBetween
+//                                    ) {
+//                                        Text(
+//                                            text = formatDuration(currentPosition),
+//                                            fontSize = 12.sp,
+//                                            color = Color(0xFF757575)
+//                                        )
+//
+//                                        Text(
+//                                            text = formatDuration(project.audioProject.durationSeconds),
+//                                            fontSize = 12.sp,
+//                                            color = Color(0xFF757575)
+//                                        )
+//                                    }
+//                                }
+//                            }
+//
+//                            Spacer(modifier = Modifier.height(24.dp))
+//                        }
 
                         // Text Content
-                        Text(
-                            text = "Nội dung văn bản",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF212121)
-                        )
+//                        Text(
+//                            text = "Nội dung văn bản",
+//                            fontSize = 18.sp,
+//                            fontWeight = FontWeight.Bold,
+//                            color = Color(0xFF212121)
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(16.dp))
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                project.audioProject?.let {
-                                    Text(
-                                        text = it.textContent,
-                                        fontSize = 15.sp,
-                                        color = Color(0xFF424242),
-                                        lineHeight = 24.sp
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        // Project statistics or additional info
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(
-                                    text = "Thông tin thêm",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF212121)
-                                )
-
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                StatItem("Tổng số slides", project.slideNum.toString())
-                                StatItem("Trạng thái", project.status.name.replace("_", " "))
-                                project.audioProject?.let { formatDuration(it.durationSeconds) }
-                                    ?.let {
-                                        StatItem(
-                                            "Thời lượng",
-                                            it
-                                        )
-                                    }
-                                project.audioProject?.voiceType?.let {
-                                    StatItem(
-                                        "Loại giọng đọc",
-                                        it
-                                    )
-                                }
-                                StatItem(
-                                    "Ngày chỉnh sửa cuối",
-                                    formatDate(project.creationTime)
-                                )
-                                StatItem("ID dự án", project.id)
-                            }
-                        }
+//                        Card(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            colors = CardDefaults.cardColors(containerColor = Color.White)
+//                        ) {
+//                            Column(modifier = Modifier.padding(16.dp)) {
+//                                project.audioProject?.let {
+//                                    Text(
+//                                        text = it.textContent,
+//                                        fontSize = 15.sp,
+//                                        color = Color(0xFF424242),
+//                                        lineHeight = 24.sp
+//                                    )
+//                                }
+//                            }
+//                        }
+//
                     }
                 }
             }

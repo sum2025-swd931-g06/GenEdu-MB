@@ -84,101 +84,101 @@ fun AudioProjectItem(
     audioProject: AudioProject,
     onClick: (AudioProject) -> Unit
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable { onClick(audioProject) },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Audio icon
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFE8F5E9)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = FontAwesomeIcons.Regular.FileAudio,
-                    contentDescription = null,
-                    tint = Color(0xFF4CAF50),
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = audioProject.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF212121),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    AudioProjectStatusChip(audioProject.status)
-
-                    Text(
-                        text = "${formatDuration(audioProject.durationSeconds)}",
-                        fontSize = 12.sp,
-                        color = Color(0xFF757575)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = FontAwesomeIcons.Regular.Calendar,
-                        contentDescription = null,
-                        tint = Color(0xFF9E9E9E),
-                        modifier = Modifier.size(14.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    val formattedDate = formatDate(audioProject.creationTime)
-                    Text(
-                        text = formattedDate,
-                        fontSize = 12.sp,
-                        color = Color(0xFF9E9E9E)
-                    )
-                }
-            }
-
-            // Play button
-            if (audioProject.status == AudioProjectStatus.COMPLETED) {
-                IconButton(
-                    onClick = { /* Handle play audio */ },
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Play Audio",
-                        tint = Color(0xFF4CAF50),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-        }
-    }
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(vertical = 8.dp)
+//            .clickable { onClick(audioProject) },
+//        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+//        shape = RoundedCornerShape(12.dp),
+//        colors = CardDefaults.cardColors(containerColor = Color.White)
+//    ) {
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(16.dp),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            // Audio icon
+//            Box(
+//                modifier = Modifier
+//                    .size(48.dp)
+//                    .clip(CircleShape)
+//                    .background(Color(0xFFE8F5E9)),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Icon(
+//                    imageVector = FontAwesomeIcons.Regular.FileAudio,
+//                    contentDescription = null,
+//                    tint = Color(0xFF4CAF50),
+//                    modifier = Modifier.size(24.dp)
+//                )
+//            }
+//
+//            Spacer(modifier = Modifier.width(16.dp))
+//
+//            Column(modifier = Modifier.weight(1f)) {
+//                Text(
+//                    text = audioProject.title,
+//                    fontSize = 16.sp,
+//                    fontWeight = FontWeight.Medium,
+//                    color = Color(0xFF212121),
+//                    maxLines = 1,
+//                    overflow = TextOverflow.Ellipsis
+//                )
+//
+//                Spacer(modifier = Modifier.height(4.dp))
+//
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+//                ) {
+//                    AudioProjectStatusChip(audioProject.status)
+//
+//                    Text(
+//                        text = "${formatDuration(audioProject.durationSeconds)}",
+//                        fontSize = 12.sp,
+//                        color = Color(0xFF757575)
+//                    )
+//                }
+//
+//                Spacer(modifier = Modifier.height(4.dp))
+//
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(
+//                        imageVector = FontAwesomeIcons.Regular.Calendar,
+//                        contentDescription = null,
+//                        tint = Color(0xFF9E9E9E),
+//                        modifier = Modifier.size(14.dp)
+//                    )
+//
+//                    Spacer(modifier = Modifier.width(4.dp))
+//
+//                    val formattedDate = formatDate(audioProject.creationTime)
+//                    Text(
+//                        text = formattedDate,
+//                        fontSize = 12.sp,
+//                        color = Color(0xFF9E9E9E)
+//                    )
+//                }
+//            }
+//
+//            // Play button
+//            if (audioProject.status == AudioProjectStatus.COMPLETED) {
+//                IconButton(
+//                    onClick = { /* Handle play audio */ },
+//                    modifier = Modifier.size(40.dp)
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.PlayArrow,
+//                        contentDescription = "Play Audio",
+//                        tint = Color(0xFF4CAF50),
+//                        modifier = Modifier.size(24.dp)
+//                    )
+//                }
+//            }
+//        }
+//    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -222,7 +222,7 @@ fun ProjectItem(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = project.title,
+                    text = project.title ?: "No title",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF212121),
@@ -238,32 +238,32 @@ fun ProjectItem(
                 ) {
                     ProjectStatusChip(project.status)
 
-                    Text(
-                        text = "${project.slideNum} slides",
-                        fontSize = 12.sp,
-                        color = Color(0xFF757575)
-                    )
+//                    Text(
+//                        text = "${project.slideNum} slides",
+//                        fontSize = 12.sp,
+//                        color = Color(0xFF757575)
+//                    )
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = FontAwesomeIcons.Regular.Calendar,
-                        contentDescription = null,
-                        tint = Color(0xFF9E9E9E),
-                        modifier = Modifier.size(14.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    val formattedDate = formatDate(project.creationTime)
-                    Text(
-                        text = formattedDate,
-                        fontSize = 12.sp,
-                        color = Color(0xFF9E9E9E)
-                    )
-                }
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(
+//                        imageVector = FontAwesomeIcons.Regular.Calendar,
+//                        contentDescription = null,
+//                        tint = Color(0xFF9E9E9E),
+//                        modifier = Modifier.size(14.dp)
+//                    )
+//
+//                    Spacer(modifier = Modifier.width(4.dp))
+//
+//                    val formattedDate = formatDate(project.creationTime)
+//                    Text(
+//                        text = formattedDate,
+//                        fontSize = 12.sp,
+//                        color = Color(0xFF9E9E9E)
+//                    )
+//                }
             }
         }
     }
@@ -339,17 +339,17 @@ fun ProjectScreen(
             }
 
             // View Toggle
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                ViewToggle(
-                    selectedMode = selectedMode,
-                    onModeChange = { selectedMode = it }
-                )
-            }
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(horizontal = 16.dp, vertical = 8.dp),
+//                horizontalArrangement = Arrangement.Center
+//            ) {
+//                ViewToggle(
+//                    selectedMode = selectedMode,
+//                    onModeChange = { selectedMode = it }
+//                )
+//            }
 
             // Content Card
             Surface(

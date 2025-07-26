@@ -20,7 +20,7 @@ fun findProjectById(projectId: String): Project {
         id = projectId,
         title = "Project not found",
         status = ProjectStatus.DRAFT,
-        creationTime = System.currentTimeMillis(),
+//        creationTime = System.currentTimeMillis(),
         slideNum = 0
     )
 }

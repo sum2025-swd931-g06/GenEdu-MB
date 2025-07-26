@@ -4,8 +4,9 @@ data class Project(
     val id: String,
     val title: String,
     val status: ProjectStatus,
-    val creationTime: Long,
+//    val creationTime: Long,
     val slideNum: Int = 0,
+    val videoUrl: String = "",
     val audioProject: AudioProject? = null
 ){
 

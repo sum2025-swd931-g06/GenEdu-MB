@@ -75,14 +75,14 @@ fun ProjectCard(
                     color = Color.Black
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Created on ${
-                        SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-                            .format(Date(project.creationTime))
-                    }",
-                    fontSize = 13.sp,
-                    color = Color.Gray
-                )
+//                Text(
+//                    text = "Created on ${
+//                        SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+//                            .format(Date(project.creationTime))
+//                    }",
+//                    fontSize = 13.sp,
+//                    color = Color.Gray
+//                )
             }
 
             Icon(
